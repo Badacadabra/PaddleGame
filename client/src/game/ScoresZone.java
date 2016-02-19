@@ -1,10 +1,11 @@
 package game;
 
+import java.awt.Color;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.border.EmptyBorder;
 
 /**
  * Classe définissant une zone d'affichage pour les scores.
@@ -13,19 +14,31 @@ import javax.swing.JList;
  * @author Baptiste Vannesson
  */
 public class ScoresZone extends JList {
-
-    /** Liste de joueurs à afficher */
-    private List<Gamer> gamers = new ArrayList<>();
+    
+    /** Constante déterminant la marge interne supérieure */
+    public static final int PADDING_TOP = 10;
+    
+    /** Constante déterminant la marge interne gauche */
+    public static final int PADDING_LEFT = 10;
+    
+    /** Constante déterminant la marge interne inférieure */
+    public static final int PADDING_BOTTOM = 10;
+    
+    /** Constante déterminant la marge interne droite */
+    public static final int PADDING_RIGHT = 10;
     
     /**
      * Constructeur de la zone d'affichage des scores.
-     * Ce dernier prend en paramètre une liste de joueurs, en l'occurrence tous ceux qui sont connectés...
+     * Ce dernier prend en paramètre un modèle de liste.
+     * Lors de la mise à jour de ce modèle, notre vue sera repeinte automatiquement.
      * 
      * @param gamers La liste des joueurs connectés au jeu
      */
-    public ScoresZone(Object[] gamers) {
-        super(gamers);
-        setAlignmentY(TOP_ALIGNMENT);
+    public ScoresZone(DefaultListModel model) {
+        super(model);
+        setBackground(Color.DARK_GRAY);
+        setAlignmentX(CENTER_ALIGNMENT);
+        setBorder(new EmptyBorder(PADDING_TOP, PADDING_LEFT, PADDING_BOTTOM, PADDING_RIGHT));
     }
     
 }

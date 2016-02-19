@@ -18,6 +18,9 @@ public class Emission implements Runnable {
     /** Objet de type Gamer désignant ici le joueur courant. */
     private Gamer gamer;
     
+    /** Message à envoyer au serveur */
+    private String message;
+    
     /**
      * Constructeur de la classe.
      * Celui-ci prend en paramètres un objet PrintWriter représentant un flux de sortie, ainsi qu'un objet Gamer représentant le joueur courant.
@@ -37,7 +40,16 @@ public class Emission implements Runnable {
      */
     @Override
     public void run() {
-        
+        while(true) {
+            message = gamer.getPseudo();
+            out.println(Primitives.SEND_PSEUDO.getName());
+            out.println(message);
+            message = "";
+            message = Integer.toString(gamer.getPaddle().getX());
+            out.println(Primitives.SEND_PADDLE_POSITION.getName());
+            out.println(message);
+            out.flush();
+        }
     }
 
 }

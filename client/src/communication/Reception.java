@@ -1,6 +1,7 @@
 package communication;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.List;
 
 import game.Gamer;
@@ -18,6 +19,9 @@ public class Reception implements Runnable {
     
     /** Liste de tous les joueurs connectés au jeu. */
     private List<Gamer> gamers;
+    
+    /** Message reçu du serveur */
+    private String message = null;
     
     /**
      * Constructeur de la classe.
@@ -37,7 +41,20 @@ public class Reception implements Runnable {
      */ 
     @Override
     public void run() {
-        
+        while(true) {
+            try {
+                message = in.readLine();
+                if (message.equals(Primitives.SEND_GAMER_INFO)) {
+                    System.out.println("Réception des informations de tous les joueurs");
+                } else if(message.equals(Primitives.SEND_BALL_COORDS)) {
+                    System.out.println("Réception de la position de la balle");
+                } else {
+                    System.out.println("Primitive inconnue");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

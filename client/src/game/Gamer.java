@@ -1,5 +1,7 @@
 package game;
 
+import java.awt.Color;
+
 /**
  * JavaBean définissant l'entité joueur.
  * Dans le cadre du jeu, un joueur est représenté par son pseudo, son score, et par sa raquette.
@@ -17,6 +19,9 @@ public class Gamer {
     /** Objet représentant la raquette du joueur */
     private Paddle paddle;
     
+    /** Couleur attribuée au joueur */
+    private Color color;
+    
     /**
      * Constructeur principal permettant d'initialiser l'objet joueur
      * 
@@ -24,10 +29,11 @@ public class Gamer {
      * @param score Score du joueur
      * @param paddle Raquette du joueur
      */
-    public Gamer(String pseudo, int score, Paddle paddle) {
+    public Gamer(String pseudo, int score, Paddle paddle, Color color) {
         this.pseudo = pseudo;
         this.score = score;
         this.paddle = paddle;
+        this.color = color;
     }
 
     /**
@@ -82,6 +88,24 @@ public class Gamer {
      */
     public void setPaddle(Paddle paddle) {
         this.paddle = paddle;
+    }
+    
+    /**
+     * Accesseur pour la couleur du joueur
+     * 
+     * @return color Couleur du joueur
+     */
+    public Color getColor() {
+        return color;
+    }
+    
+    /**
+     * Mutateur pour la couleur du joueur
+     * 
+     * @param color Nouvelle couleur du joueur
+     */
+    public void setColor(Color color) {
+        this.color = color;
     }
     
     /**
