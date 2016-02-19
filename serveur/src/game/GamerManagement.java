@@ -11,6 +11,7 @@ import communication.*;
  * Class GameManagement : classe permettant de gérer les joueurs 
  * côté serveur 
  * @author Macky Dieng
+ * http://stackoverflow.com/questions/29635960/sending-a-message-from-server-to-all-clients
  */
 public class GamerManagement extends Thread {
 	
@@ -18,15 +19,32 @@ public class GamerManagement extends Thread {
 	 * Socket cliente
 	 */
 	private Socket client;
+	
 	/**
 	 * Flux d'écture du client
 	 */
 	private PrintWriter out;
+	
 	/**
 	 * Flux de lecture du client
 	 */
 	private BufferedReader in;
 	
+	/**
+	 * La référence de l'objet reception du serveur
+	 */
+	private Reception reception;
+	
+	/**
+	 * La référence de l'objet Emission du serveur
+	 */
+	private Emission emission;
+	
+	private int i = 0;
+	/**
+	 * Constructeur de la classe
+	 * @param client
+	 */
 	public GamerManagement(Socket client) {
 		this.client = client;
 		this.start();
@@ -36,57 +54,42 @@ public class GamerManagement extends Thread {
 		try {
 			out = new PrintWriter(client.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			this.setIn(in);
-			this.setOut(out);
-			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		new Reception(in,out);
 	}
 	/**
-	 * Renvoie le client actuel connecté au serveur
-	 * @return Socket
+	 * Renvoie la référence Reception du serveur
+	 * @return Reception
 	 */
-	public Socket getClient() {
-		return this.client;
+	public Reception getReception() {
+		return reception;
 	}
 	/**
-	 * Permet de modifier le client actuel
-	 * @param client : Nouveau client à assigner
-	 * @return void
+	 * Modifie la référence Reception du serveur
+	 * @param reception la nouvelle référence à assigner
 	 */
-	public void setClient(Socket client) {
-		this.client = client;
+	public void setReception(Reception reception) {
+		this.reception = reception;
 	}
 	/**
-	 * Renvoie le flux d'écriture du client courant
-	 * @return PrintWriter
+	 * Renvoie la référence Emission du serveur
+	 * @return Emission
 	 */
-	public PrintWriter getOut() {
-		return out;
+	public Emission getEmission() {
+		return emission;
 	}
 	/**
-	 * Modifie le flux d'écriture du client courant
-	 * @param out : le nouveau flux à assigner
+	 * Modifie la référence Emission du serveur
+	 * @param emission nouvelle référence à assigner
 	 */
-	public void setOut(PrintWriter out) {
-		this.out = out;
+	public void setEmission(Emission emission) {
+		this.emission = emission;
 	}
-	/**
-	 * Renvoie le flux de lecture du client courant
-	 * @return BufferedReader
-	 */
-	public BufferedReader getIn() {
-		return in;
+	public String toString () {
+		return "GameManager_"+i++;
 	}
-	/**
-	 * Modifie le flux d'écriture du client courant
-	 * @param in : le nouveau flux à assigner
-	 */
-	public void setIn(BufferedReader in) {
-		this.in = in;
-	}
-	
 	
 }

@@ -20,12 +20,19 @@ public enum Primitives {
 	/**
 	 * Nom de la primitive
 	 */
-	private String name;
+	private final String name;
 	/**
 	 * Constructeur de la l'unémeration
 	 * @param name : le nom de la primitive
 	 */
-	Primitives (String name) {
+	Primitives (final String name) {
 		this.name = name;
+	}
+	/**
+	 * Renvoie le nom de la primitive
+	 * @return String
+	 */
+	public String getName() {
+		return name;
 	}
 }

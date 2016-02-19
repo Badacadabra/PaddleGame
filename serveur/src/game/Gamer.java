@@ -79,4 +79,9 @@ public class Gamer {
 		this.paddle = paddle;
 	}
 	
+	public String toString() {
+		String str = pseudo +" "+score+" "+paddle.getX();
+		return str;
+	}
+	
 }

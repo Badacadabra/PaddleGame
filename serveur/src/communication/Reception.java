@@ -3,6 +3,8 @@ package communication;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,101 +17,98 @@ import game.*;
 public class Reception extends Thread {
 	
 	/**
-	 * Le flux de lecture 
+	 * Flux de lecture du client
 	 */
 	private BufferedReader in;
-	
+	/**
+	 * Flux de d'écriture du client
+	 */
+	private PrintWriter out;
 	/**
 	 * La référence du joueur
 	 */
 	private Gamer gamer;
 	
-	private List<Gamer> listgamer;
 	/**
-	 * Message reçu du client
+	 * Message à renvoyé aux joueurs
 	 */
-	private String message = null;
+	private String message;
 	
 	/**
-	 * Construteur de la classe
+	 * La primitive courante
 	 */
-	public Reception(BufferedReader in) {
+	private String primitive;
+	
+	/**
+	 * Constructeur de la classe
+	 * @param in le flux de lecture
+	 */
+	public Reception(BufferedReader in,PrintWriter out) {
 		this.in = in;
+		this.out = out;
 		this.start();
 	}
 	
 	/**
-	 * Permet de lancer le thread
+	 * Permet de lancer le Thread
 	 */
 	public void run() {
 		
 		try {
-			listgamer = new ArrayList<>();
-			while(true) {
+			boolean canRead = true;
+	
+			while(canRead) {
 				message = in.readLine();
-				
-				if (message.equals(Primitives.SEND_PSEUDO)) {
-					String pseudo = message;
-					gamer = new Gamer(pseudo,0,new Paddle(30));
-					listgamer.add(gamer);
-					
+				if (message!=null) {
+					if (message.equals(Primitives.SEND_PSEUDO.getName())) {
+						primitive = message;
+						String pseudo  = in.readLine();
+						gamer = new Gamer(pseudo,0,new Paddle(30));
+						message = " ";
+						message += gamer.toString()+"\n"; 
+						new Emission(out,message,primitive);
+					}
+				} else {
+					canRead = false;
 				}
-			}
+			} 
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
-	
+
 	/**
-	 * Renvoie le flux de lecture
-	 * @return BufferedReader
+	 * Renvoie le message à envoyer
+	 * @return String
 	 */
-	public BufferedReader getIn() {
-		return in;
+	public String getMessage() {
+		return message;
 	}
 
 	/**
-	 * Modifie le flux de lecture
-	 * @param in le nouveau flux à assigner
+	 * Modifie le message à envoyer
+	 * @param message nouveau message à assigner
 	 */
-	public void setIn(BufferedReader in) {
-		this.in = in;
+	public void setMessage(String message) {
+		this.message = message;
 	}
 
 	/**
-	 * Renvoie la référence du joueur
-	 * @return Gamer
+	 * Renvoie la primitive courante de communication
+	 * @return String
 	 */
-	public Gamer getGamer() {
-		return gamer;
+	public String getPrimitive() {
+		return primitive;
 	}
 
 	/**
-	 * Modifie la référence du joueur
-	 * @param gamer la nouvelle référence à assigner
+	 * Modifie la primitive courante de communication
+	 * @param primitive the primitive to set
 	 */
-	public void setGamer(Gamer gamer) {
-		this.gamer = gamer;
+	public void setPrimitive(String primitive) {
+		this.primitive = primitive;
 	}
-
-	/**
-	 * Renvoie la liste dees joueurs
-	 * @return List<Gamer>
-	 */
-	public List<Gamer> getListgamer() {
-		return listgamer;
-	}
-
-	/**
-	 * Modifie la liste des joueurs
-	 * @param listgamer nouvelle liste à assigner
-	 */
-	public void setListgamer(List<Gamer> listgamer) {
-		this.listgamer = listgamer;
-	}
-	
 	
 }

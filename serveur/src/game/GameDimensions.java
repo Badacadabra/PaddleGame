@@ -18,7 +18,12 @@ public enum GameDimensions {
 	GameDimensions (final int val) {
 		value = val;
 	}
-	
-	public int getValue() { return value; }
+	/**
+	 * Renvoie la valeur de la primitive
+	 * @return int
+	 */
+	public int getValue() {
+		return value; 
+	}
 	
 }

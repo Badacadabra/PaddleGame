@@ -1,7 +1,10 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import game.*;
@@ -12,7 +15,7 @@ public class Server {
 	/**
 	 * Port d'écoute du serveur
 	 */
-	public static final int PORT = 1337;
+	public static final int PORT = 1339;
 	/**
 	 * La socket serveur 
 	 */
@@ -41,15 +44,18 @@ public class Server {
 			System.out.println("Le serveur est à l'écoute du port "+ss.getLocalPort());
 			while(true) {
 				Socket client = ss.accept();
-				GamerManagement gm = new GamerManagement(client);
-				gamersManagement.add(gm);
-				//emission = new Emission(gamersManagement);
-				reception = new Reception(gm.getIn());
+				new GamerManagement(client);
+				//gamersManagement.add(gm);
+				//sendToAll();
 			}
 			
 		} catch (IOException e) {
-			//System.err.println("Le port "+ss.getLocalPort()+" est déjà utilisé !");
 			System.out.println(e.getMessage());
+		}
+	}
+	public static void sendToAll() {
+		for (GamerManagement gm : gamersManagement) {
+			gm.start();
 		}
 	}
 }
