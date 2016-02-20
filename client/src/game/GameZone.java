@@ -42,24 +42,24 @@ public class GameZone extends JPanel implements Runnable, MouseMotionListener {
     
     /**
      * Constructeur de la zone du jeu proprement dit.
-     * Ce dernier prend en paramètres une balle et plusieurs raquettes.
+     * Ce dernier prend en paramètres une balle, plusieurs joueurs, ainsi qu'un modèle de liste pour affichage des scores.
      * 
      * @param ball La balle du jeu
-     * @param paddles Les raquettes de tous les joueurs
+     * @param gamers La liste des joueurs
+     * @param model Modèle de liste pour affichage des scores
      */
     public GameZone(Ball ball, List<Gamer> gamers, DefaultListModel model) {
-
         this.ball = ball;
         this.gamers = new ArrayList<Gamer>();
         for (Gamer gamer : gamers) {
             this.gamers.add(gamer);
         }
 
-        // Taille de la zone de jeu
-        setPreferredSize(new Dimension(BALL_AREA_WIDTH, BALL_AREA_HEIGHT));
-        
         // Modèle de la liste (pour affichage des scores)
         this.model = model;
+        
+        // Taille de la zone de jeu
+        setPreferredSize(new Dimension(BALL_AREA_WIDTH, BALL_AREA_HEIGHT));
         
         // On écoute les événements de MouseMotionListener (drag & move)
         this.addMouseMotionListener(this);
@@ -186,7 +186,7 @@ public class GameZone extends JPanel implements Runnable, MouseMotionListener {
      * 
      * @param e Objet MouseEvent
      */
-    private void mouseAction(MouseEvent e) {
+    private void paddleAction(MouseEvent e) {
         // System.out.println(e.getPoint());
         Paddle paddle = gamers.get(0).getPaddle();
         if (e.getX() < (GameZone.BALL_AREA_WIDTH - Paddle.WIDTH)) {
@@ -202,7 +202,7 @@ public class GameZone extends JPanel implements Runnable, MouseMotionListener {
      */
     @Override
     public void mouseDragged(MouseEvent e) {
-       mouseAction(e);
+       paddleAction(e);
     }
 
     /**
@@ -212,7 +212,7 @@ public class GameZone extends JPanel implements Runnable, MouseMotionListener {
      */
     @Override
     public void mouseMoved(MouseEvent e) {
-        mouseAction(e);
+        paddleAction(e);
     }
     
     /**
@@ -221,7 +221,7 @@ public class GameZone extends JPanel implements Runnable, MouseMotionListener {
      * 
      * @param La nouvelle raquette à afficher dans la zone de jeu
      */
-    public void addPaddle(Gamer gamer) {
+    public void addGamer(Gamer gamer) {
         gamers.add(gamer);
     }
     
@@ -231,7 +231,7 @@ public class GameZone extends JPanel implements Runnable, MouseMotionListener {
      * 
      * @param La raquette à supprimer de la zone de jeu
      */
-    public void removePaddle(Gamer gamer) {
+    public void removeGamer(Gamer gamer) {
         gamers.remove(gamer);
     }
 
