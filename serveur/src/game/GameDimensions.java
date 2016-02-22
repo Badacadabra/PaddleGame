@@ -7,8 +7,8 @@ package game;
  */
 public enum GameDimensions {
 	
-	GAME_ZONE_WIDTH(600),
-	GAME_ZONE_HEIGHT(600),
+	GAME_ZONE_WIDTH(285),
+	GAME_ZONE_HEIGHT(285),
 	MIN_BALL_COORD(0);
 	/**
 	 * Valeur entière

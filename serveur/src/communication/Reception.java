@@ -60,7 +60,7 @@ public class Reception extends Thread {
 			while(canRead) {
 				message = in.readLine();
 				if (message!=null) {
-					if (message.equals(Primitives.SEND_PSEUDO.getName())) {
+					if (message.equals(Primitives.SEND_PSEUDO)) {
 						primitive = message;
 						String pseudo  = in.readLine();
 						gamer = new Gamer(pseudo,0,new Paddle(30));

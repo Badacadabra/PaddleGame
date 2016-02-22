@@ -64,8 +64,8 @@ public class Emission extends Thread {
       */
      public void run () {
     	 System.out.println(primitive);
-    	 System.out.println(Primitives.SEND_PSEUDO.getName());
-    	if (primitive.equals(Primitives.SEND_PSEUDO.getName())) { //Si la reception nous indiques avoir reçu le pseudo
+    	 System.out.println(Primitives.SEND_PSEUDO);
+    	if (primitive.equals(Primitives.SEND_PSEUDO)) { //Si la reception nous indiques avoir reçu le pseudo
     		//On crée une nouvelle balle aléatoirement
     		Random r = new Random();
     		int low = GameDimensions.MIN_BALL_COORD.getValue();
@@ -73,13 +73,13 @@ public class Emission extends Thread {
     		int x = r.nextInt(heigh - low) + low;
     		int y = r.nextInt(heigh - low) + low;
     		ball = Ball.getBall(x, y);
-    		String msg = Primitives.SEND_BALL_COORDS.getName();
+    		String msg = Primitives.SEND_BALL_COORDS;
     		this.write(msg); //On informe que les infos qui vont suivre concerne la balle
     		msg = "PosX = "+Integer.toString(ball.getX());
     		this.write(msg);
         	msg = "PosY = "+Integer.toString(ball.getY());
         	this.write(msg);
-        	msg = Primitives.SEND_GAMER_INFO.getName();
+        	msg = Primitives.SEND_GAMER_INFO;
         	this.write(msg); //On informe que les infos qui vont suivre concerne les joueurs
         	this.write(message);//On envoie le message délégué par la Reception
     	}

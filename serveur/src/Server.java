@@ -15,7 +15,7 @@ public class Server {
 	/**
 	 * Port d'écoute du serveur
 	 */
-	public static final int PORT = 1339;
+	public static final int PORT = 1330;
 	/**
 	 * La socket serveur 
 	 */
@@ -42,16 +42,20 @@ public class Server {
 		try {
 			ss = new ServerSocket(PORT);
 			System.out.println("Le serveur est à l'écoute du port "+ss.getLocalPort());
+			int index = 1;
 			while(true) {
 				Socket client = ss.accept();
-				new GamerManagement(client);
-				//gamersManagement.add(gm);
-				//sendToAll();
+				GamerManagement gm = new GamerManagement(index,client);
+				gamersManagement.add(gm);
+				gm.setGamerManagement(gamersManagement);
+				gm.start();
+				index++;
 			}
 			
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
+		//sendToAll();
 	}
 	public static void sendToAll() {
 		for (GamerManagement gm : gamersManagement) {
