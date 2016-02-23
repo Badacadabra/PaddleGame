@@ -6,18 +6,25 @@ import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
  * Classe définissant la zone du jeu proprement dit.
- * Il s'agit ici d'un objet de type JPanel contenant notamment la balle et la raquette.
+ * Il s'agit ici d'un objet de type JPanel contenant la balle et les raquettes.
+ * On remarquera notamment que cette classe implémente MouseMotionListener pour écouter les mouvements de souris.
  * 
  * @author Baptiste Vannesson
  */
-public class GameZone extends JPanel {
+public class GameZone extends JPanel implements Runnable, MouseMotionListener {
 
     /** Constante déterminant la largeur de la zone contenant la balle */
     public static final int BALL_AREA_WIDTH = 600;
@@ -28,61 +35,234 @@ public class GameZone extends JPanel {
     /** La balle du jeu */
     private Ball ball;
     
-    /** L'ensemble des raquettes (du joueur et de ses adversaires) */
-    private List<Paddle> paddles;
+    /** Le joueur courant */
+    private Gamer gamer;
+    
+    /** Map des adversaires connectés au jeu */
+    private Map<String,Gamer> opponents;
+    
+    /** Modèle de liste pour affichage des scores */
+    private DefaultListModel<Gamer> scoresModel;
     
     /**
      * Constructeur de la zone du jeu proprement dit.
-     * Ce dernier prend en paramètres une balle et plusieurs raquettes.
+     * Ce dernier prend en paramètres une balle, le joueur courant, ainsi qu'un modèle de liste pour affichage des scores.
      * 
      * @param ball La balle du jeu
-     * @param paddles Les raquettes de tous les joueurs
+     * @param gamer Le joueur courant
+     * @param model Modèle de liste pour affichage des scores
      */
-    public GameZone(Ball ball, List<Paddle> paddles) {
-        setPreferredSize(new Dimension(BALL_AREA_WIDTH, BALL_AREA_HEIGHT));
+    public GameZone(Ball ball, Gamer gamer, DefaultListModel<Gamer> scoresModel) {
         this.ball = ball;
-        this.paddles = new ArrayList<Paddle>();
-        for (Paddle paddle : paddles) {
-            this.paddles.add(paddle);
-        }
+        this.gamer = gamer;
+        this.scoresModel = scoresModel;
+        this.opponents = new HashMap<String,Gamer>();
+        
+        // Taille de la zone de jeu
+        setPreferredSize(new Dimension(BALL_AREA_WIDTH, BALL_AREA_HEIGHT));
+        
+        // On écoute les événements de MouseMotionListener (drag & move)
+        this.addMouseMotionListener(this);
+        
+        // On cache le curseur pour que le jeu soit plus agréable
+        this.setCursor(this.getToolkit().createCustomCursor(
+                new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB), new Point(0, 0), "null"));
     }
     
+    /**
+     * Méthode fondamentale pour dessiner tous les éléments du jeu.
+     * La structure de cette méthode s'inspire du pattern Template.
+     * 
+     * @param g Un objet de type Graphics
+     */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        // Zone de jeu
-        g2d.setColor(Color.LIGHT_GRAY);
-        g2d.fillRect(0, 0, BALL_AREA_WIDTH, BALL_AREA_HEIGHT);
-        // Balle
+        // On dessine la zone de jeu
+        drawGameZone(g2d);
+        // On dessine la balle
+        drawBall(g2d);
+        // On dessine les raquettes
+        drawPaddles(g2d);
+    }
+    
+    /**
+     * Méthode helper utilisée par « paintComponent » pour dessiner la zone de jeu
+     * 
+     * @param g2d Objet Graphics2D
+     */
+    private void drawGameZone(Graphics2D g2d) {
         g2d.setColor(Color.BLACK);
-        g2d.fillOval(ball.getX(), ball.getY(), ball.BALL_DIAMETER, ball.BALL_DIAMETER);
-        // Raquettes
-        for (Paddle paddle : paddles) {
-            g2d.setColor(paddle.getColor());
-            g2d.fillRect(paddle.getX(), paddle.Y, Paddle.WIDTH, Paddle.HEIGHT);
-            Composite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .4f);
-            g2d.setComposite(composite);
+        g2d.fillRect(0, 0, BALL_AREA_WIDTH, BALL_AREA_HEIGHT);
+    }
+    
+    /**
+     * Méthode helper utilisée par « paintComponent » pour dessiner la balle
+     * 
+     * @param g2d Objet Graphics2D
+     */
+    private void drawBall(Graphics2D g2d) {
+        g2d.setColor(Color.WHITE);
+        g2d.fillOval(ball.getX(), ball.getY(), Ball.BALL_DIAMETER, Ball.BALL_DIAMETER);
+    }
+    
+    /**
+     * Méthode helper utilisée  par « paintComponent » pour dessiner toutes les raquettes
+     * 
+     * @param g2d Objet Graphics2D
+     */
+    private void drawPaddles(Graphics2D g2d) {
+        // On dessine la raquette du joueur courant
+        Paddle paddle = gamer.getPaddle();
+        g2d.setColor(gamer.getColor());
+        g2d.fillRoundRect(paddle.getX(), Paddle.Y, Paddle.WIDTH, Paddle.HEIGHT, 15, 15);
+        // S'ils existent, on dessine les raquettes des adversaires (avec transparence)
+        if (opponents.size() > 0) {
+            for (Gamer opponent : opponents.values()) {
+                // Gestion de la transparence
+                Composite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .4f);
+                g2d.setComposite(composite);
+                // Raquettes des adversaires
+                Paddle opponentPaddle = opponent.getPaddle();
+                g2d.setColor(opponent.getColor());
+                g2d.fillRoundRect(opponentPaddle.getX(), Paddle.Y, Paddle.WIDTH, Paddle.HEIGHT, 15, 15);
+            }
         }
     }
     
     /**
-     * Méthode permettant d'ajouter une raquette à la liste des raquettes.
+     * Méthode lançant le déplacement de la balle.
+     * Les coordonnées de la balle viennent du serveur.
+     */
+    public void moveBall() {
+        boolean reverseX = false;
+        boolean reverseY = false;
+        int ballX = ball.getX();
+        int ballY = ball.getY();
+        int collisions = 0;
+        int earnedPoints = 0;
+        Paddle paddle = gamer.getPaddle();
+        while(true) {
+            // Gestion des limites horizontales
+            if(ballX < 1) {
+                reverseX = false;
+            }
+            if(ballX > getWidth() - Ball.BALL_DIAMETER) {
+                reverseX = true;          
+            }
+            if(!reverseX) {
+                ball.setX(++ballX);
+            } else {
+                ball.setX(--ballX);
+            }
+            // Gestion des limites verticales
+            if(ballY < 1) {
+                reverseY = false;
+            }
+            if(!reverseY) {
+                ball.setY(++ballY);
+            } else {
+                ball.setY(--ballY);
+            }
+            // Gestion des collisions
+            if (ballY + Ball.BALL_DIAMETER == Paddle.Y
+                    && ballX >= paddle.getX()
+                    && ballX <= paddle.getX() + Paddle.WIDTH) {
+                reverseY = true;
+                System.out.println("Collision");
+                collisions++;
+                earnedPoints += opponents.size() + 1;
+                gamer.setScore((earnedPoints / (collisions * opponents.size() + 1)) * 100);
+                scoresModel.set(0, gamer);
+            }
+            // Perte de balle
+            if (ballY > Paddle.Y + Ball.BALL_DIAMETER) {
+                ball.setX(0);
+                ball.setY(0);
+                int answer = JOptionPane.showConfirmDialog(null, "Voulez-vous continuer ?", "Balle perdue !", JOptionPane.YES_NO_OPTION);
+                if (answer == JOptionPane.NO_OPTION) {
+                    System.exit(0);
+                }
+                moveBall(); // Récursivité
+            }
+            repaint();
+            try {
+              Thread.sleep(7);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+        }
+    }
+    
+    /**
+     * Méthode gérant toutes les actions relatives à MouseMotionListener.
+     * À chaque action avec la souris (drag & move), on capte les nouvelles coordonnées.
+     * On récupère en particulier le X pour mettre à jour la position de la raquette.
+     * 
+     * @param e Objet MouseEvent
+     */
+    private void paddleAction(MouseEvent e) {
+        // System.out.println(e.getPoint());
+        Paddle paddle = gamer.getPaddle();
+        if (e.getX() < (GameZone.BALL_AREA_WIDTH - Paddle.WIDTH)) {
+            paddle.setX(e.getX());
+        }
+        repaint();
+    }
+    
+    /**
+     * Méthode gérant les événements liés au drag de la souris.
+     * 
+     * @param e Objet MouseEvent
+     */
+    @Override
+    public void mouseDragged(MouseEvent e) {
+       paddleAction(e);
+    }
+
+    /**
+     * Méthode gérant les événements liés au déplacement de la souris.
+     * 
+     * @param e Objet MouseEvent
+     */
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        paddleAction(e);
+    }
+    
+    /**
+     * Méthode permettant d'ajouter un adversaire à la liste des adversaires.
      * Utile lorsqu'un nouveau client se connecte et veut entamer une partie.
      * 
      * @param La nouvelle raquette à afficher dans la zone de jeu
      */
-    public void addPaddle(Paddle paddle) {
-        paddles.add(paddle);
+    public void addOpponent(Gamer gamer) {
+        opponents.put(gamer.getPseudo(), gamer);
     }
     
     /**
-     * Méthode permettant de supprimer une raquette de la liste des raquettes.
+     * Méthode mettant à jour les données du joueur.
+     * Cette méthode est utile si on part du principe que les modifications sont fréquentes.
+     * Il est bien plus performant de mettre à jour les données dans une HashMap que de vider et de reconstruire une ArrayList...
+     * 
+     * @param gamer Objet Gamer chargé avec toutes les nouvelles données
+     */
+    public void updateOpponent(Gamer gamer) {
+        String pseudo = gamer.getPseudo();
+        if (opponents.containsKey(pseudo)) {
+            opponents.get(pseudo).setScore(gamer.getScore());
+            opponents.get(pseudo).setPaddle(gamer.getPaddle());
+        }
+    }
+    
+    /**
+     * Méthode permettant de supprimer un adversaire de la liste des adversaires.
      * Utile lorsqu'un client quitte le jeu.
      * 
      * @param La raquette à supprimer de la zone de jeu
      */
-    public void removePaddle(Paddle paddle) {
-        paddles.remove(paddle);
+    public void removeOpponent(Gamer gamer) {
+        opponents.remove(gamer);
     }
 
     /**
@@ -104,12 +284,38 @@ public class GameZone extends JPanel {
     }
 
     /**
-     * Accesseur pour les raquettes
+     * Accesseur pour le joueur courant
+     * 
+     * @return Le joueur courant
+     */
+    public Gamer getGamer() {
+        return gamer;
+    }
+    
+    /**
+     * Accesseur pour les adversaires du joueur courant
      * 
      * @return Une liste d'objets de type Paddle
      */
-    public List<Paddle> getPaddles() {
-        return paddles;
+    public Map<String,Gamer> getOpponents() {
+        return opponents;
+    }
+
+    /**
+     * Accesseur pour le modèle des scores
+     * 
+     * @return Un objet DefaultListModel
+     */
+    public DefaultListModel<Gamer> getScoresModel() {
+        return scoresModel;
+    }
+    
+    /**
+     * Méthode du Thread qui se contente de déplacer la balle dans le canevas.
+     */
+    @Override
+    public void run() {
+       moveBall();
     }
     
 }

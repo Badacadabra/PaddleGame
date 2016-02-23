@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<project name="Paddle Game (Client)" default="dist">
+
+<target name="compile" depends="init">				
+  <javac srcdir="src" destdir="build" includeantruntime="false">
+    <include name="game/**/*.java" />
+    <include name="network/**/*.java" />
+  </javac>
+</target>
+
+<target name="dist" depends="init,compile">
+  <jar basedir="build" excludes="tests/**" destfile="dist/paddle-game-client.jar">
+    <manifest>
+      <attribute name="Main-Class" value="Client" />
+    </manifest>
+  </jar>
+</target>
+
+<target name="doc" depends="init,compile">
+  <javadoc packagenames="game.*,network.*" sourcepath="src" destdir="doc" charset="UTF-8" />
+</target>
+
+<target name="init">
+  <mkdir dir="build" />
+  <mkdir dir="dist" />
+  <mkdir dir="doc" />
+</target>
+
+<target name="clear">
+  <antcall target="clean" />
+  <delete dir="build" />
+  <delete dir="dist" />
+  <delete dir="doc" />
+</target>
+
+<target name="clean">
+  <delete verbose="true">
+    <fileset dir="." includes="**/*~"  defaultexcludes="no" />
+  </delete>
+</target>
+
+</project>

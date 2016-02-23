@@ -1,14 +1,8 @@
 package game;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-
-import javax.swing.JPanel;
-
 /**
  * Classe définissant une balle.
- * Une balle est ici un rond dessiné dans un canevas (un panneau).
+ * Une balle est ici un disque dessiné dans un canevas (un panneau).
  * À noter que le jeu ne doit comporter qu'une seule balle, d'où l'utilisation d'un Singleton.
  * 
  * @author Baptiste Vannesson
@@ -16,7 +10,7 @@ import javax.swing.JPanel;
 public class Ball {
 
     /** Constante déterminant le diamètre de la balle */
-    public static final int BALL_DIAMETER = 30;
+    public static final int BALL_DIAMETER = 20;
     
     /** Instance statique de la classe elle-même (cf. Singleton) */
     private static Ball ball;
@@ -36,6 +30,17 @@ public class Ball {
     private Ball(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+    
+    /**
+     * Méthode statique d'accès à l'unique instance de la classe.
+     * On simule ici un constructeur par défaut.
+     * Cf. getBall(int x, int y).
+     * 
+     * @return Objet de type Ball, autrement dit une balle
+     */
+    public static Ball getBall() {
+        return getBall(0,0);
     }
     
     /**
