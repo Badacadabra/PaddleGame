@@ -24,18 +24,6 @@ public class Server {
 	 * List des gestionnaire de joueur
 	 */
 	private static List<GamerManagement> gamersManagement = new ArrayList<>();
-	/**
-	 * Référence de la balle
-	 */
-	private Ball ball;
-	/**
-	 * Variable de référence de l'objet Emission
-	 */
-	private static Emission emission;
-	/**
-	 * Variable de référence de l'objet Reception
-	 */
-	private static Reception reception;
 	
 	
 	public static void main(String[] args) {
@@ -54,12 +42,6 @@ public class Server {
 			
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
-		}
-		//sendToAll();
-	}
-	public static void sendToAll() {
-		for (GamerManagement gm : gamersManagement) {
-			gm.start();
 		}
 	}
 }

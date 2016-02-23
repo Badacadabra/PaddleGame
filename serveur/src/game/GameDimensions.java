@@ -4,15 +4,16 @@ package game;
  * Enumeration GameDimensions : Définit les constantes du jeu
  * @author Macky Dieng
  * @author Baptiste Vannesson
- */
+ 
 public enum GameDimensions {
 	
-	GAME_ZONE_WIDTH(285),
-	GAME_ZONE_HEIGHT(285),
+	GAME_ZONE_WIDTH(600),
+	GAME_ZONE_HEIGHT(600),
+	BALL_DIAMETER(20),
 	MIN_BALL_COORD(0);
 	/**
 	 * Valeur entière
-	 */
+	 *
 	private final int value;
 	
 	GameDimensions (final int val) {
@@ -21,9 +22,20 @@ public enum GameDimensions {
 	/**
 	 * Renvoie la valeur de la primitive
 	 * @return int
-	 */
+	 
 	public int getValue() {
 		return value; 
-	}
+	}*
 	
+}*/
+
+public class GameDimensions {
+	public static final int GAME_ZONE_WIDTH = 600;
+	public static final int GAME_ZONE_HEIGHT = 600;
+	public static final int BALL_DIAMETER = 20;
+	public static final int MIN_BALL_COORD = 0;
+	public static final int PADDLE_WIDTH = 150;
+	public static final int PADDLE_HEIGHT = 20;
+	public static final int PADDLE_Y = GAME_ZONE_HEIGHT - PADDLE_HEIGHT;
+	public static final int PADDLE_X = (GAME_ZONE_WIDTH / 2) - (PADDLE_WIDTH / 2);
 }
