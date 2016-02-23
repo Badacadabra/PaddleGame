@@ -2,7 +2,7 @@ package game;
 
 /**
  * Classe définissant une balle.
- * Une balle est ici un rond dessiné dans un canevas (un panneau).
+ * Une balle est ici un disque dessiné dans un canevas (un panneau).
  * À noter que le jeu ne doit comporter qu'une seule balle, d'où l'utilisation d'un Singleton.
  * 
  * @author Baptiste Vannesson
@@ -30,6 +30,17 @@ public class Ball {
     private Ball(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+    
+    /**
+     * Méthode statique d'accès à l'unique instance de la classe.
+     * On simule ici un constructeur par défaut.
+     * Cf. getBall(int x, int y).
+     * 
+     * @return Objet de type Ball, autrement dit une balle
+     */
+    public static Ball getBall() {
+        return getBall(0,0);
     }
     
     /**

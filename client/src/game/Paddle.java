@@ -1,9 +1,5 @@
 package game;
 
-import java.awt.Color;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-
 /**
  * Classe définissant une raquette.
  * Une raquette est ici un rectangle dessiné dans un canevas (panneau).
@@ -27,14 +23,14 @@ public class Paddle {
     
     /**
      * Constructeur par défaut d'une raquette.
-     * Par défaut, une raquette se place tout en bas à gauche de la zone de jeu.
+     * Par défaut, une raquette se trouve à l'origine en x.
      */
     public Paddle() {
         this(0);
     }
     
     /**
-     * Constructeur d'une raquette, prenant en paramètres les coordonnées de celle-ci.
+     * Constructeur d'une raquette, prenant en paramètre sa position sur l'axe des abscisses.
      * 
      * @param x Position de la raquette sur l'axe des x
      */
@@ -59,7 +55,5 @@ public class Paddle {
     public void setX(int x) {
         this.x = x;
     }
-    
-
     
 }

@@ -4,12 +4,15 @@ import java.awt.Color;
 
 /**
  * JavaBean définissant l'entité joueur.
- * Dans le cadre du jeu, un joueur est représenté par son pseudo, son score, et par sa raquette.
+ * Dans le cadre du jeu, un joueur est représenté par son pseudo, son score, sa raquette, et sa couleur.
  * 
  * @author Baptiste Vannesson
  */
 public class Gamer {
 
+    /** Constante déterminant le score par défaut d'un joueur */
+    public static final int DEFAULT_SCORE = 0;
+    
     /** Chaîne de caractères représentant le pseudo du joueur */
     private String pseudo;
     
@@ -23,11 +26,19 @@ public class Gamer {
     private Color color;
     
     /**
+     * Constructeur par défaut d'un joueur
+     */
+    public Gamer() {
+        this("", DEFAULT_SCORE, null, Color.WHITE);
+    }
+    
+    /**
      * Constructeur principal permettant d'initialiser l'objet joueur
      * 
      * @param pseudo Pseudo du joueur
      * @param score Score du joueur
      * @param paddle Raquette du joueur
+     * @param color Couleur du joueur
      */
     public Gamer(String pseudo, int score, Paddle paddle, Color color) {
         this.pseudo = pseudo;
@@ -106,15 +117,6 @@ public class Gamer {
      */
     public void setColor(Color color) {
         this.color = color;
-    }
-    
-    /**
-     * Gestion de l'affichage pour l'objet Gamer
-     * 
-     * @return Chaîne de caractères contenant les informations du joueur (pseudo et score)
-     */
-    public String toString() {
-        return pseudo + " : " + score + " %";
     }
     
 }

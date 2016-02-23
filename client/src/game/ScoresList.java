@@ -6,7 +6,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.border.EmptyBorder;
 
-public class ScoresList extends JList {
+public class ScoresList<Gamer> extends JList {
 
     /** Constante déterminant la marge interne supérieure */
     public static final int PADDING_TOP = 10;
@@ -27,7 +27,7 @@ public class ScoresList extends JList {
      * 
      * @param gamers La liste des joueurs connectés au jeu
      */
-    public ScoresList(DefaultListModel model) {
+    public ScoresList(DefaultListModel<Gamer> model) {
         super(model);
         setBackground(Color.DARK_GRAY);
         setAlignmentX(CENTER_ALIGNMENT);
