@@ -86,7 +86,7 @@ public class ClientGUI extends JFrame implements Runnable {
         scoresZone = new ScoresZone(scoresList);
         
         gameZone = new GameZone(ball, gamer, scoresModel);
-        new Thread(gameZone).start();
+        //new Thread(gameZone).start();
         
         screen.setLayout(new BoxLayout(screen, BoxLayout.X_AXIS)); // Pattern Strategy
         screen.add(scoresZone);

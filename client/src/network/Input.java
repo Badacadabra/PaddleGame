@@ -1,14 +1,19 @@
 package network;
 
+import game.Ball;
+import game.GameZone;
+import game.Gamer;
+import game.Paddle;
+
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import game.GameZone;
-import game.Gamer;
-import game.Paddle;
+import javax.swing.JOptionPane;
 
 /**
  * Classe permettant de gérer les flux entrants de manière plus élégante.
@@ -21,6 +26,10 @@ public class Input extends IO {
     /** Représentation du flux d'entrée (pour la réception de données venant du serveur) */
     private BufferedReader in;
     
+    /**
+     * L'index de mise à jour de la liste des joueurs
+     */
+    private int index = 0; 
     /**
      * Constructeur de la classe.
      * Celui-ci prend en paramètres un objet InputStream représentant un flux d'entrée.
@@ -35,46 +44,62 @@ public class Input extends IO {
      * Méthode gérant les interactions effectives avec le serveur, en lecture.
      */ 
     private void read() throws IOException {
-        String primitive = in.readLine();
-        System.out.println(primitive);
+        String message = in.readLine();
         // Le client reçoit du serveur toutes les informations sur tous les joueurs
-        if (primitive.equals(Primitives.SEND_GAMERS_INFO.getName())) {
-            System.out.println("Réception des informations de tous les joueurs");
-            int nbGamers = Integer.parseInt(in.readLine());
+        if (!message.equals(Primitives.SEND_BALL_COORDS.getName())) {
+        	//System.out.println(message);
+            //int nbGamers = Integer.parseInt(in.readLine());
+    		//System.out.println(nbGamers);
             Color[] colors = {Color.GREEN, Color.CYAN, Color.RED, Color.PINK, Color.ORANGE, Color.BLUE};
-            for (int i = 0; i < nbGamers; i++) {
+            //for (int i = 0; i < nbGamers; i++) {
                 // On récupère toutes les informations de chaque joueur
-                String[] gamerInfo = in.readLine().split("_");
+            	//String tab = in.readLine();
+                String[] gamerInfo = message.split("_");
                 String pseudo = gamerInfo[0];
+                int score = Integer.parseInt(gamerInfo[1]);
+                System.out.println(pseudo);
+                System.out.println(score);
                 if (!pseudo.equals(gameZone.getGamer().getPseudo())) {
-                    int score = Integer.parseInt(gamerInfo[1]);
                     Paddle paddle = new Paddle(Integer.parseInt(gamerInfo[2]));
-                    Gamer opponent = new Gamer(pseudo, score, paddle, colors[i]);
+                    Gamer opponent = new Gamer(pseudo, score, paddle, colors[index]);
+                    //System.out.println(opponent);
                     // On ajoute l'adversaire au jeu
                     if (!gameZone.getOpponents().containsKey(pseudo)) {
                         gameZone.addOpponent(opponent);
                         gameZone.getScoresModel().addElement(opponent);
                     } else { // On met à jour l'adversaire               
                         gameZone.updateOpponent(opponent);
-                        gameZone.getScoresModel().set(i, opponent);
+                        gameZone.getScoresModel().set(index, opponent);
                     }
-                    // On envoie les données en console pour vérification
-                    System.out.println("Index : " + i);
-                    System.out.println("Pseudo : " + pseudo);
-                    System.out.println("Score : " + gamerInfo[1]);
-                    System.out.println("Paddle position : " + gamerInfo[2]);
+                } else {
+                	gameZone.getGamer().setScore(score);
+                	gameZone.getScoresModel().set(index,gameZone.getGamer());
                 }
+                //On envoie les données en console pour vérification
+                System.out.println("Pseudo : " + pseudo);
+                System.out.println("Score : " + gamerInfo[1]);
+                System.out.println("Paddle position : " + gamerInfo[2]);
+                index++;
             }
         // Le client reçoit du serveur les nouvelles coordonnées de la balle
-        } else if(primitive.equals(Primitives.SEND_BALL_COORDS.getName())) { 
-            System.out.println("Réception de la position de la balle");
-            int ballX = Integer.parseInt(in.readLine());
-            int ballY = Integer.parseInt(in.readLine());
+        //}
+        if(message.equals(Primitives.SEND_BALL_COORDS.getName())) { 
+        	//System.out.println(message);
+        	int ballX = Integer.parseInt(in.readLine());
+        	int ballY = Integer.parseInt(in.readLine());
             gameZone.getBall().setX(ballX);
             gameZone.getBall().setY(ballY);
-            System.out.println("Coordonnées de la balle : (" + ballX + "," + ballY + ")");
+            gameZone.moveBall();
+            index = 0;
+            /* if (ballY > Paddle.Y + Ball.BALL_DIAMETER) {
+                int answer = JOptionPane.showConfirmDialog(null, "Voulez-vous continuer ?", "Balle perdue !", JOptionPane.YES_NO_OPTION);
+                if (answer == JOptionPane.NO_OPTION) {
+                    System.exit(0);
+                }
+            } */
+            //System.out.println("Coordonnées de la balle : (" + ballX + "," + ballY + ")");
         } else { 
-            System.out.println("Primitive inconnue");
+            //System.out.println("Primitive inconnue");
         }
     }
     
@@ -90,6 +115,7 @@ public class Input extends IO {
                 }
             } catch(IOException e) {
                 e.printStackTrace();
+                System.exit(0);
             }
         }
     }

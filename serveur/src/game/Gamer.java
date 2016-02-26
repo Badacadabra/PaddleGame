@@ -80,7 +80,7 @@ public class Gamer {
 	}
 	
 	public String toString() {
-		String str = pseudo +" "+score+" "+paddle.getX();
+		String str = pseudo +"_"+score+"_"+paddle.getX();
 		return str;
 	}
 	

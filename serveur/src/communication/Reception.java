@@ -1,15 +1,10 @@
 package communication;
 
+import game.GamerManagement;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import game.*;
 /**
  * Classe Reception répresente le flux de lecture du serveur
  * @author Macky Dieng
@@ -42,26 +37,37 @@ public class Reception extends Thread {
 	 */
 	public Reception(GamerManagement gm) {
 		this.gamerManagement = gm;
-		in = gamerManagement.in;
+		in = gamerManagement.getIn();
 		this.start();
 	}
 	@Override
+	/**
+	 * Méthode génrant la reception des données dans l'entrée standard des clients
+	 */
 	public void run() {
-		
+		read();
+	}
+	/**
+	 * Méthde effectuant une lecture permanente des données 
+	 * depuis l'entrée standard des clients
+	 */
+	private void read() {
 		try {
 			boolean canRead = true;
 			ArrayList<String> listPrimitve = new ArrayList<>();
 			listPrimitve.add(Primitives.SEND_PSEUDO);
 			listPrimitve.add(Primitives.SEND_PADDLE_POSITION);
+			primitive = in.readLine();
+			if (primitive.equals(Primitives.SEND_PSEUDO)) { 
+				pseudo  = in.readLine();
+				gamerManagement.getGamer().setPseudo(pseudo); //associe le pseudo au joueur courant
+			}
 			while(canRead) {
 				primitive = in.readLine();
 				if (primitive!=null) {
-					if (listPrimitve.contains(primitive)) { //Si l'une des primitives match
-						if (primitive.equals(Primitives.SEND_PSEUDO)) { //On vérifie s'il s'agit d'un pseudo
-							pseudo  = in.readLine();
-							gamerManagement.getGamer().setPseudo(pseudo+"_"+gamerManagement.index); //On associe le pseudo au joueur courant
-						}
-						new Emission(gamerManagement,primitive); //On déclenche l'émission
+					if (primitive.equals(Primitives.SEND_PADDLE_POSITION)) {
+						int paddleX = Integer.parseInt(in.readLine());
+						gamerManagement.getGamer().getPaddle().setX(paddleX); //On associe le pseudo au joueur courant
 					}
 				} else {
 					canRead = false;
@@ -71,6 +77,5 @@ public class Reception extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 }

@@ -119,4 +119,8 @@ public class Gamer {
         this.color = color;
     }
     
+    public String toString() {
+    	return pseudo+"_"+score+"_"+paddle.getX()+"_"+color;
+    }
+    
 }

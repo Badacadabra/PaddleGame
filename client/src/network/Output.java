@@ -47,7 +47,7 @@ public class Output extends IO {
             out.println(Primitives.SEND_PADDLE_POSITION.getName());
             out.println(paddlePosition);
         } else {
-            System.out.println("Primitive inconnue");
+            //System.out.println("Primitive inconnue");
         }
         out.flush();
     }
@@ -65,6 +65,7 @@ public class Output extends IO {
                 Thread.sleep(7);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                System.exit(0);
             }
         }
     }

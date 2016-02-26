@@ -38,7 +38,7 @@ public enum Primitives {
 }*/
 public class Primitives {
 	public static final String SEND_PSEUDO = "SEND_PSEUDO";
-	public static final String SEND_GAMER_INFO = "SEND_GAMER_INFO";
+	public static final String SEND_GAMERS_INFO = "SEND_GAMERS_INFO";
 	public static final String SEND_BALL_COORDS = "SEND_BALL_COORDS";
 	public static final String SEND_NEW_POINTS = "SEND_NEW_POINTS";
 	public static final String SEND_PADDLE_POSITION = "SEND_PADDLE_POSITION";

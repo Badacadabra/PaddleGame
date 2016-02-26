@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Random;
 
 import main.Server;
-import game.*;
+import game.Ball;
+import game.GameDimensions;
+import game.Gamer;
+import game.GamerManagement;
 
-public class Emission extends Thread {
+public class BallManager extends Thread {
 	
 	/**
 	 * Référence de la balle
@@ -25,83 +28,50 @@ public class Emission extends Thread {
      */
     private List<Gamer> listGamers;
     
-    /**
-     * Permet de faire réculer ou anvancer la balle sur l'axe horizontal
-     */
-    private boolean reverseX;
-    
-    /**
-     * Permet de faire réculer ou anvancer la balle sur l'axe vertical
-     */
-    private boolean reverseY;
-    
-    /**
-     * Représente la coordonnée X de la balle
-     */
-    private int ballX;
-    
-    /**
-     * Représente la coordonnée Y de la balle
-     */
-    private int ballY;
-    
-    /**
-     * Permet de savoir si le Thread peux continuer à envoyer les informations
-     */
+    private String primitive;
+    private boolean reverseX, reverseY,paddleBackX;
+    private int ballX,ballY,paddleX;
     private boolean canSend = true;
     
-    /**
-     * Constructeur de la classe
-     */
-	public Emission () {
+	public BallManager () {
 		this.listGamerManagement = Server.listGamerManagement;
 		this.listGamers = new ArrayList<>();
 		this.start();
 	}
 	
-	/**
-	 *	Méthode génrant l'écriture dans la sortie standard des clients
-	 */
 	public void run () {
 		try {
 			createNewBall();
-			send();
+			sendBallInfos();
 		} catch (Exception e) {
 			e.getStackTrace();
 		}
 	}
-	
-	/**
-	 * Méthode gérant l'envoi des informations aux clients
-	 */
-	private void send() {
+	public void sendBallInfos() {
 		while (canSend){
 			for (GamerManagement gm : listGamerManagement) {
+				//System.out.println(gm.getGamer());
 				if (!listGamers.contains(gm.getGamer())) {
 					 listGamers.add(gm.getGamer());
 				 }
 				String msg = Primitives.SEND_BALL_COORDS;
-		 		this.write(msg,gm.getOut()); //On informe que les infos qui vont suivre concerne la balle
+		 		this.write(msg,gm.out); //On informe que les infos qui vont suivre concerne la balle
 		 		this.moveBall();
 		 		msg = Integer.toString(ball.getX()); //Le x de la balle
-		 		this.write(msg,gm.getOut());
+		 		this.write(msg,gm.out);
 		     	msg = Integer.toString(ball.getY()); //Le y de la balle
-		     	this.write(msg,gm.getOut());
+		     	this.write(msg,gm.out);
 		     	//msg = Primitives.SEND_GAMERS_INFO; 
-		     	//this.write(msg,gm.getOut()); //On informe que les infos qui vont suivre concerne les joueurs
-		     	//this.write(Integer.toString(listGamerManagement.size()), gm.getOut()); //Envoi du nombre de joueurs*/
+		     	//this.write(msg,gm.out); //On informe que les infos qui vont suivre concerne les joueurs
+		     	//this.write(Integer.toString(listGamerManagement.size()), gm.out); //Envoi du nombre de joueurs*/
 		     	for (Gamer gamer : listGamers) {
 		     		msg = gamer.toString(); 
-		     		//System.getOut().println(msg);
-			     	this.write(msg,gm.getOut());//On envoie le message
+		     		//System.out.println(msg);
+			     	this.write(msg,gm.out);//On envoie le message
 				}
 			}
 		}
 	}
-	/**
-	 * Méthode permettant de générer des coordonnées aléatoires pour le ballon
-	 * @return int[]
-	 */
 	private int[] getRandomCoords() {
  		Random r = new Random();
 		int low = GameDimensions.MIN_BALL_COORD;
@@ -112,19 +82,14 @@ public class Emission extends Thread {
 		return coords;
 		
  	}
-	/**
-	 * Méthode générant la création d'une nouvelle balle
-	 */
- 	private void createNewBall() {
+ 	private synchronized void createNewBall() {
 		int[] coords = this.getRandomCoords();
 		ball = Ball.getBall(coords[0], coords[1]);
  	}
- 	/**
- 	 * Méthode gérant le déplacement de la bale
- 	 */
  	private void moveBall() {
  		int collisions = 0;
         int earnedPoints = 0;
+        //Paddle paddle  = gamer.getPaddle();
  		if(ballX < 1)reverseX = false;
 	      if(ballX > GameDimensions.GAME_ZONE_WIDTH - GameDimensions.BALL_DIAMETER)reverseX = true;          
 	      if(ballY < 1)reverseY = false;
@@ -140,7 +105,7 @@ public class Emission extends Thread {
 	                  && ballX >= gamer.getPaddle().getX()
 	                  && ballX <= gamer.getPaddle().getX() + GameDimensions.PADDLE_WIDTH) {
 	              reverseY = true;
-	              //System.getOut().println("Collision");
+	              //System.out.println("Collision");
 	              collisions++;
 	              earnedPoints += listGamerManagement.size();
 	              gamer.setScore((earnedPoints / (collisions * listGamerManagement.size())) * 100);

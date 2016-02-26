@@ -7,14 +7,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import communication.*;
+import communication.Emission;
+import communication.Reception;
+
 /**
- * Class GameManagement : classe permettant de gérer les joueurs 
- * côté serveur 
+ * Class GameManagement : classe permettant de gérer les connextions clients côté serveur
  * @author Macky Dieng
- * http://stackoverflow.com/questions/29635960/sending-a-message-from-server-to-all-clients
  */
 public class GamerManagement extends Thread {
 	
@@ -26,20 +25,12 @@ public class GamerManagement extends Thread {
 	/**
 	 * Flux d'écture du client
 	 */
-	public PrintWriter out;
+	private PrintWriter out;
 	
 	/**
 	 * Flux de lecture du client
 	 */
-	public BufferedReader in;
-	/**
-	 * Liste des gestionnaires de joueurs
-	 */
-	private List<GamerManagement> gamersManagement = new ArrayList<>();
-	/**
-	 * L'index du client cour
-	 */
-	public int index = 0;
+	private BufferedReader in;
 	
 	/**
 	 * La référence du joueur courant
@@ -48,12 +39,11 @@ public class GamerManagement extends Thread {
 	
 	/**
 	 * Constructeur de la classe
-	 * @param client
+	 * @param client : le client courant en cours de connexion
 	 */
-	public GamerManagement(int index,Socket client) {
+	public GamerManagement(Socket client) {
 		this.client = client;
-		this.index = index;
-		this.gamer = new Gamer(null,0,new Paddle(GameDimensions.PADDLE_X));
+		this.gamer = new Gamer(null,0,new Paddle(0));
 		try {
 			out = new PrintWriter(this.client.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(this.client.getInputStream()));
@@ -62,48 +52,59 @@ public class GamerManagement extends Thread {
 		}
 	}
 	@Override
+	/**
+	 * Méthode gérant le lancement du gestionnaire
+	 */
 	public void run() {
 		try {
 			new Reception(this);
+			new Emission();
 		} catch (Exception e) {
 			System.out.println("Impossible de démarrer la session"+" "+e.getMessage());
 		}
 		
 	}
 	/**
-	 * Modifie la liste des gamers management
-	 * @param gm nouvelle liste à assigner
-	 */
-    public void setGamerManagement(List<GamerManagement> gm){
-    	gamersManagement = gm;
-    }
-    /**
-     * Renvoie la liste des gamers management
-     * @return List<GamerManagement>
-     */
-    public List<GamerManagement> getGamerManagement(){
-    	return gamersManagement;
-    }
-    
-	/**
-	 * Renvoie la référence du joueur courant
+	 * Renvoie le joueur courant associé au gestionnaire
 	 * @return Gamer
 	 */
 	public Gamer getGamer() {
 		return gamer;
 	}
 	/**
-	 * Modifie la référenc du joueur courant
-	 * @param gamer la nouvelle référence à assgner
+	 * Modifie le joueur courant associé au gestionnaire
+	 * @param gamer la nouveau joueur à assigner
 	 */
 	public void setGamer(Gamer gamer) {
 		this.gamer = gamer;
 	}
-	public String toString() {
-		String str ="Client N°"+index+"\n";
-		str+="NB_Client = "+gamersManagement.size();
-		return str;
+	/**
+	 * Renvoie la sortie standard
+	 * @return PrintWriter
+	 */
+	public PrintWriter getOut() {
+		return out;
 	}
-	
+	/**
+	 * Modifie la sortie standard du client courant
+	 * @param out nouvelle sortie à assigner
+	 */
+	public void setOut(PrintWriter out) {
+		this.out = out;
+	}
+	/**
+	 * Renvoie l'entrée standard du client courant
+	 * @return the in
+	 */
+	public BufferedReader getIn() {
+		return in;
+	}
+	/**
+	 * Modifie l'entrée standard du client
+	 * @param in nouvelle entrée à assigner
+	 */
+	public void setIn(BufferedReader in) {
+		this.in = in;
+	}
 	
 }

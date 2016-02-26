@@ -24,7 +24,7 @@ import javax.swing.JPanel;
  * 
  * @author Baptiste Vannesson
  */
-public class GameZone extends JPanel implements Runnable, MouseMotionListener {
+public class GameZone extends JPanel implements MouseMotionListener {
 
     /** Constante déterminant la largeur de la zone contenant la balle */
     public static final int BALL_AREA_WIDTH = 600;
@@ -135,63 +135,7 @@ public class GameZone extends JPanel implements Runnable, MouseMotionListener {
      * Les coordonnées de la balle viennent du serveur.
      */
     public void moveBall() {
-        boolean reverseX = false;
-        boolean reverseY = false;
-        int ballX = ball.getX();
-        int ballY = ball.getY();
-        int collisions = 0;
-        int earnedPoints = 0;
-        Paddle paddle = gamer.getPaddle();
-        while(true) {
-            // Gestion des limites horizontales
-            if(ballX < 1) {
-                reverseX = false;
-            }
-            if(ballX > getWidth() - Ball.BALL_DIAMETER) {
-                reverseX = true;          
-            }
-            if(!reverseX) {
-                ball.setX(++ballX);
-            } else {
-                ball.setX(--ballX);
-            }
-            // Gestion des limites verticales
-            if(ballY < 1) {
-                reverseY = false;
-            }
-            if(!reverseY) {
-                ball.setY(++ballY);
-            } else {
-                ball.setY(--ballY);
-            }
-            // Gestion des collisions
-            if (ballY + Ball.BALL_DIAMETER == Paddle.Y
-                    && ballX >= paddle.getX()
-                    && ballX <= paddle.getX() + Paddle.WIDTH) {
-                reverseY = true;
-                System.out.println("Collision");
-                collisions++;
-                earnedPoints += opponents.size() + 1;
-                gamer.setScore((earnedPoints / (collisions * opponents.size() + 1)) * 100);
-                scoresModel.set(0, gamer);
-            }
-            // Perte de balle
-            if (ballY > Paddle.Y + Ball.BALL_DIAMETER) {
-                ball.setX(0);
-                ball.setY(0);
-                int answer = JOptionPane.showConfirmDialog(null, "Voulez-vous continuer ?", "Balle perdue !", JOptionPane.YES_NO_OPTION);
-                if (answer == JOptionPane.NO_OPTION) {
-                    System.exit(0);
-                }
-                moveBall(); // Récursivité
-            }
-            repaint();
-            try {
-              Thread.sleep(7);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
-        }
+        this.repaint();
     }
     
     /**
@@ -309,13 +253,4 @@ public class GameZone extends JPanel implements Runnable, MouseMotionListener {
     public DefaultListModel<Gamer> getScoresModel() {
         return scoresModel;
     }
-    
-    /**
-     * Méthode du Thread qui se contente de déplacer la balle dans le canevas.
-     */
-    @Override
-    public void run() {
-       moveBall();
-    }
-    
 }
