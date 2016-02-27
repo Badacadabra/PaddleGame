@@ -26,10 +26,9 @@ public class Input extends IO {
     /** Représentation du flux d'entrée (pour la réception de données venant du serveur) */
     private BufferedReader in;
     
-    /**
-     * L'index de mise à jour de la liste des joueurs
-     */
-    private int index = 0; 
+    /** L'index de mise à jour de la liste des joueurs */
+    private int index = 0;
+    
     /**
      * Constructeur de la classe.
      * Celui-ci prend en paramètres un objet InputStream représentant un flux d'entrée.
@@ -57,8 +56,6 @@ public class Input extends IO {
                 String[] gamerInfo = message.split("_");
                 String pseudo = gamerInfo[0];
                 int score = Integer.parseInt(gamerInfo[1]);
-                System.out.println(pseudo);
-                System.out.println(score);
                 if (!pseudo.equals(gameZone.getGamer().getPseudo())) {
                     Paddle paddle = new Paddle(Integer.parseInt(gamerInfo[2]));
                     Gamer opponent = new Gamer(pseudo, score, paddle, colors[index]);
@@ -76,30 +73,35 @@ public class Input extends IO {
                 	gameZone.getScoresModel().set(index,gameZone.getGamer());
                 }
                 //On envoie les données en console pour vérification
-                System.out.println("Pseudo : " + pseudo);
+                /*System.out.println("Pseudo : " + pseudo);
                 System.out.println("Score : " + gamerInfo[1]);
-                System.out.println("Paddle position : " + gamerInfo[2]);
+                System.out.println("Paddle position : " + gamerInfo[2]);*/
                 index++;
             }
         // Le client reçoit du serveur les nouvelles coordonnées de la balle
         //}
         if(message.equals(Primitives.SEND_BALL_COORDS.getName())) { 
         	//System.out.println(message);
-        	int ballX = Integer.parseInt(in.readLine());
-        	int ballY = Integer.parseInt(in.readLine());
-            gameZone.getBall().setX(ballX);
-            gameZone.getBall().setY(ballY);
-            gameZone.moveBall();
-            index = 0;
+        	// boolean isBlocked = false;
+    		int ballX = Integer.parseInt(in.readLine());
+    		int ballY = Integer.parseInt(in.readLine());
+    		gameZone.getBall().setX(ballX);
+    		gameZone.getBall().setY(ballY);
+    		gameZone.moveBall();
+    		index = 0;
             /* if (ballY > Paddle.Y + Ball.BALL_DIAMETER) {
-                int answer = JOptionPane.showConfirmDialog(null, "Voulez-vous continuer ?", "Balle perdue !", JOptionPane.YES_NO_OPTION);
+            	int answer = JOptionPane.showConfirmDialog(null, "Voulez-vous continuer ?", "Balle perdue !", JOptionPane.YES_NO_OPTION);
+            	if (answer == JOptionPane.YES_OPTION) {
+                    isBlocked = true;
+                }
                 if (answer == JOptionPane.NO_OPTION) {
                     System.exit(0);
                 }
+                while (in.readLine() != null && !isBlocked) {
+            		// test
+            	}
             } */
             //System.out.println("Coordonnées de la balle : (" + ballX + "," + ballY + ")");
-        } else { 
-            //System.out.println("Primitive inconnue");
         }
     }
     

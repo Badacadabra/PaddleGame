@@ -1,12 +1,17 @@
 package communication;
 
+import game.Ball;
+import game.GameDimensions;
+import game.Gamer;
+import game.GamerManagement;
+
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import main.Server;
-import game.*;
 
 public class Emission extends Thread {
 	
@@ -48,14 +53,18 @@ public class Emission extends Thread {
     /**
      * Permet de savoir si le Thread peux continuer à envoyer les informations
      */
-    private boolean canSend = true;
-    
+    private boolean canSend;
+    //private int collisions;
+    //private int earnedPoints;
     /**
      * Constructeur de la classe
      */
 	public Emission () {
 		this.listGamerManagement = Server.listGamerManagement;
 		this.listGamers = new ArrayList<>();
+		//collisions = 0;
+        //earnedPoints = 0;
+        canSend = true;
 		this.start();
 	}
 	
@@ -123,8 +132,7 @@ public class Emission extends Thread {
  	 * Méthode gérant le déplacement de la bale
  	 */
  	private void moveBall() {
- 		int collisions = 0;
-        int earnedPoints = 0;
+ 		
  		if(ballX < 1)reverseX = false;
 	      if(ballX > GameDimensions.GAME_ZONE_WIDTH - GameDimensions.BALL_DIAMETER)reverseX = true;          
 	      if(ballY < 1)reverseY = false;
@@ -134,23 +142,57 @@ public class Emission extends Thread {
 	      if(!reverseY) ball.setY(++ballY);
 	      else ball.setY(--ballY);
 	      
+	      //Gestion des collisions
+	      int min = Math.abs(ballX - (listGamers.get(0).getPaddle().getX() + (GameDimensions.PADDLE_WIDTH / 2)));
+    	  Gamer winner = null;
+    	  boolean collisionDetected = false;
 	      // Gestion des collisions
 	      for (Gamer gamer : listGamers) {
 	    	  if (ballY + GameDimensions.BALL_DIAMETER == GameDimensions.PADDLE_Y
 	                  && ballX >= gamer.getPaddle().getX()
 	                  && ballX <= gamer.getPaddle().getX() + GameDimensions.PADDLE_WIDTH) {
+	    		  collisionDetected = true;
 	              reverseY = true;
 	              //System.getOut().println("Collision");
-	              collisions++;
-	              earnedPoints += listGamerManagement.size();
-	              gamer.setScore((earnedPoints / (collisions * listGamerManagement.size())) * 100);
+	              //collisions++;
+	              int paddleCenter = gamer.getPaddle().getX() + (GameDimensions.PADDLE_WIDTH / 2);
+	    		  int diff = Math.abs(ballX - paddleCenter);
+	    		  if (diff <= min) {
+	    			  min = diff;
+	    			  winner = gamer;
+	    		  }
 	          }
 	      }
+	      if (collisionDetected) {
+	    	  int points = listGamers.size();
+	    	  for (Gamer gamer : listGamers) {
+	    		  gamer.setIdealPoints(points);
+	    		  if (gamer.equals(winner)) {
+	    			  gamer.setEarnedPoints(points);
+	    			  //System.out.println("Winner");
+	    		  }
+	    		  //System.out.println("Ok");
+	    		  double rawScore = ((double) gamer.getEarnedPoints() / gamer.getIdealPoints());
+	    		  int percentScore = (int)(rawScore * 100);
+	    		 gamer.setScore(percentScore);
+	    		 /* System.out.println(gamer.getPseudo() + " : " + gamer.getEarnedPoints() + "/" + gamer.getIdealPoints());
+	    		 System.out.println("Raw score : " + rawScore);
+	    		 System.out.println("Score (%) : " + percentScore); */
+	    	  }
+	          //System.out.println("Joueur qui a le point"+" "+winner.getPseudo());
+	      }
           //Perte de la balle 
-          if (ballY > GameDimensions.PADDLE_Y + GameDimensions.BALL_DIAMETER) {
+          if (ballY > GameDimensions.PADDLE_Y + GameDimensions.BALL_DIAMETER + 1) {
         	  int[] coords = this.getRandomCoords();
               ball.setX(coords[0]);
               ball.setY(coords[1]);
+              for (Gamer gamer : listGamers) {
+            	  int points = listGamers.size();
+            	  gamer.setIdealPoints(points);
+            	  double rawScore = ((double) gamer.getEarnedPoints() / gamer.getIdealPoints());
+	    		  int percentScore = (int)(rawScore * 100);
+	    		 gamer.setScore(percentScore);
+              }
           }
 	      try {
 	        Thread.sleep(5);
@@ -165,5 +207,11 @@ public class Emission extends Thread {
     private void write(String message,PrintWriter out) {
 	   	 out.println(message);
 	   	 out.flush();
+    }
+  
+    private float round(float d, int decimalPlace) {
+        BigDecimal bd = new BigDecimal(Float.toString(d));
+        bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
+        return bd.floatValue();
     }
 }

@@ -19,16 +19,28 @@ public class Gamer {
 	 * La raquette du joueur
 	 */
 	private Paddle paddle;
+	
+	/**
+	 * Nombre de points gagnés par le joueur
+	 */
+	private int earnedPoints;
+	
+	/**
+	 * Nombre de points idéal que devrait ganger le joueur
+	 */
+	private int idealPoints;
 	/**
 	 * Constructeur de la classe
 	 * @param pseudo pseudo du joueur
 	 * @param score socre du joueur
 	 * @param paddle raquette du joueur
 	 */
-	public Gamer(String pseudo, int score, Paddle paddle ) {
+	public Gamer(String pseudo, int score,Paddle paddle ) {
 		this.pseudo = pseudo;
 		this.score = score;
 		this.paddle = paddle;
+		this.earnedPoints = 0;
+		this.idealPoints = 0;
 	}
 
 	/**
@@ -79,6 +91,38 @@ public class Gamer {
 		this.paddle = paddle;
 	}
 	
+	/**
+	 * Nombre points gagnés par le joueur
+	 * @return int
+	 */
+	public int getEarnedPoints() {
+		return earnedPoints;
+	}
+
+	/**
+	 * Modifie le nombre de points du joueur 
+	 * @param earnedPoints the earnedPoints to set
+	 */
+	public void setEarnedPoints(int earnedPoints) {
+		this.earnedPoints += earnedPoints;
+	}
+
+	/**
+	 * Renvoie le nombre de points idéal pour le joueur
+	 * @return int
+	 */
+	public int getIdealPoints() {
+		return idealPoints;
+	}
+
+	/**
+	 * Modifie le nombre de points idéal pour le joueur
+	 * @param idealPoints the idealPoints to set
+	 */
+	public void setIdealPoints(int idealPoints) {
+		this.idealPoints += idealPoints;
+	}
+
 	public String toString() {
 		String str = pseudo +"_"+score+"_"+paddle.getX();
 		return str;
