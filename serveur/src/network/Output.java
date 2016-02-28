@@ -1,12 +1,17 @@
 package network;
 
+import game.Ball;
+import game.GameDimensions;
+import game.Gamer;
+import game.GamerManagement;
+
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import main.Server;
-import game.*;
 
 public class Output extends Thread {
 	
@@ -48,7 +53,7 @@ public class Output extends Thread {
     /**
      * Permet de savoir si le Thread peux continuer à envoyer les informations
      */
-    private boolean canSend = true;
+    private boolean canSend;
     
     /**
      * Constructeur de la classe
@@ -56,6 +61,7 @@ public class Output extends Thread {
 	public Output () {
 		this.listGamerManagement = Server.listGamerManagement;
 		this.listGamers = new ArrayList<>();
+        this.canSend = true;
 		this.start();
 	}
 	
@@ -81,15 +87,15 @@ public class Output extends Thread {
 					 listGamers.add(gm.getGamer());
 				 }
 				String msg = Primitives.SEND_BALL_COORDS;
-		 		this.write(msg,gm.getOut()); //On informe que les infos qui vont suivre concerne la balle
+		 		this.write(msg,gm.getOut()); //On informe que les infos qui vont suivres concernent la balle
 		 		this.moveBall();
 		 		msg = Integer.toString(ball.getX()); //Le x de la balle
 		 		this.write(msg,gm.getOut());
 		     	msg = Integer.toString(ball.getY()); //Le y de la balle
 		     	this.write(msg,gm.getOut());
-		     	for (Gamer gamer : listGamers) {
+		     	for (Gamer gamer : listGamers) { //Envoi les infos de tout le monde à tous clients
 		     		msg = gamer.toString(); 
-			     	this.write(msg,gm.getOut());//On envoie le message
+			     	this.write(msg,gm.getOut());
 				}
 			}
 		}
@@ -119,8 +125,7 @@ public class Output extends Thread {
  	 * Méthode gérant le déplacement de la bale
  	 */
  	private void moveBall() {
- 		int collisions = 0;
-        int earnedPoints = 0;
+ 		
  		if(ballX < 1)reverseX = false;
 	      if(ballX > GameDimensions.GAME_ZONE_WIDTH - GameDimensions.BALL_DIAMETER)reverseX = true;          
 	      if(ballY < 1)reverseY = false;
@@ -130,23 +135,34 @@ public class Output extends Thread {
 	      if(!reverseY) ball.setY(++ballY);
 	      else ball.setY(--ballY);
 	      
+	      //Gestion des collisions
+	      int min = Math.abs(ballX - (listGamers.get(0).getPaddle().getX() + (GameDimensions.PADDLE_WIDTH / 2)));
+    	  Gamer winner = null;
+    	  boolean collisionDetected = false;
 	      // Gestion des collisions
 	      for (Gamer gamer : listGamers) {
 	    	  if (ballY + GameDimensions.BALL_DIAMETER == GameDimensions.PADDLE_Y
 	                  && ballX >= gamer.getPaddle().getX()
 	                  && ballX <= gamer.getPaddle().getX() + GameDimensions.PADDLE_WIDTH) {
+	    		  collisionDetected = true;
 	              reverseY = true;
-	              //System.getOut().println("Collision");
-	              collisions++;
-	              earnedPoints += listGamerManagement.size();
-	              gamer.setScore((earnedPoints / (collisions * listGamerManagement.size())) * 100);
+	              int paddleCenter = gamer.getPaddle().getX() + (GameDimensions.PADDLE_WIDTH / 2);
+	    		  int diff = Math.abs(ballX - paddleCenter);
+	    		  if (diff <= min) {
+	    			  min = diff;
+	    			  winner = gamer;
+	    		  }
 	          }
 	      }
-	      //Perte de la balle 
-          if (ballY > GameDimensions.PADDLE_Y + GameDimensions.BALL_DIAMETER) {
+	      if (collisionDetected) {
+	    	  this.calculateScore(true,winner);
+	      }
+          //Perte de la balle 
+          if (ballY > GameDimensions.PADDLE_Y + GameDimensions.BALL_DIAMETER + 1) {
         	  int[] coords = this.getRandomCoords();
               ball.setX(coords[0]);
               ball.setY(coords[1]);
+              this.calculateScore(false,null);
           }
 	      try {
 	        Thread.sleep(5);
@@ -161,5 +177,22 @@ public class Output extends Thread {
     private void write(String message,PrintWriter out) {
 	   	 out.println(message);
 	   	 out.flush();
+    }
+    /**
+     * Recalcule automatiquement le score des joueurs
+     * @param winnerExist permet de savoir si un vainqueur existe
+     * @param winner le vainqueur à qui attribuer le point
+     */
+    private void calculateScore(boolean winnerExist, Gamer winner) {
+    	int points = listGamers.size();
+    	for (Gamer gamer : listGamers) {
+    		gamer.setIdealPoints(points);
+    		if (winnerExist && gamer.equals(winner)) {
+    			gamer.setEarnedPoints(points);
+    		}
+      	  double rawScore = ((double) gamer.getEarnedPoints() / gamer.getIdealPoints());
+  		  int percentScore = (int)(rawScore * 100);
+  		 gamer.setScore(percentScore);
+        }
     }
 }

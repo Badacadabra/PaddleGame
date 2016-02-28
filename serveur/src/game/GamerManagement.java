@@ -8,8 +8,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import communication.Emission;
-import communication.Reception;
+import network.Output;
+import network.Input;
 
 /**
  * Class GameManagement : classe permettant de gérer les connextions clients côté serveur
@@ -57,8 +57,8 @@ public class GamerManagement extends Thread {
 	 */
 	public void run() {
 		try {
-			new Reception(this);
-			new Emission();
+			new Input(this);
+			new Output();
 		} catch (Exception e) {
 			System.out.println("Impossible de démarrer la session"+" "+e.getMessage());
 		}

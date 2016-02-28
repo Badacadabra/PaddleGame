@@ -11,11 +11,25 @@ import java.util.ArrayList;
  */
 public class Input extends Thread {
 	
-
+	/**
+	 * Flux de lecture du client
+	 */
+	private BufferedReader in;
+	
+	/**
+	 * Message à renvoyé aux joueurs
+	 */
+	private String primitive;
+	
 	/**
 	 * Le client courant 
 	 */
 	private GamerManagement gamerManagement;
+	
+	/**
+	 * Le pseudo du client courant
+	 */
+	private String pseudo;
 	
 	/**
 	 * Constructeur de la classe
@@ -23,6 +37,7 @@ public class Input extends Thread {
 	 */
 	public Input(GamerManagement gm) {
 		this.gamerManagement = gm;
+		in = gamerManagement.getIn();
 		this.start();
 	}
 	@Override
@@ -33,16 +48,15 @@ public class Input extends Thread {
 		read();
 	}
 	/**
-	 * Méthode effectuant une lecture permanente des données 
+	 * Méthde effectuant une lecture permanente des données 
 	 * depuis l'entrée standard des clients
 	 */
 	private void read() {
 		try {
 			boolean canRead = true;
-			BufferedReader in = gamerManagement.getIn(); 
-			String pseudo = null;
-			String primitive = null;
-			
+			ArrayList<String> listPrimitve = new ArrayList<>();
+			listPrimitve.add(Primitives.SEND_PSEUDO);
+			listPrimitve.add(Primitives.SEND_PADDLE_POSITION);
 			primitive = in.readLine();
 			if (primitive.equals(Primitives.SEND_PSEUDO)) { 
 				pseudo  = in.readLine();
@@ -53,7 +67,7 @@ public class Input extends Thread {
 				if (primitive!=null) {
 					if (primitive.equals(Primitives.SEND_PADDLE_POSITION)) {
 						int paddleX = Integer.parseInt(in.readLine());
-						gamerManagement.getGamer().getPaddle().setX(paddleX); //On associe le pseudo au joueur courant
+						gamerManagement.getGamer().getPaddle().setX(paddleX); //Modifie en temps réel la raquette du joueur courant
 					}
 				} else {
 					canRead = false;
