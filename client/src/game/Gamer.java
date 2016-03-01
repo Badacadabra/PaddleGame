@@ -33,7 +33,7 @@ public class Gamer {
     }
     
     /**
-     * Constructeur principal permettant d'initialiser l'objet joueur
+     * Constructeur principal permettant d'initialiser un objet Gamer
      * 
      * @param pseudo Pseudo du joueur
      * @param score Score du joueur
@@ -117,10 +117,6 @@ public class Gamer {
      */
     public void setColor(Color color) {
         this.color = color;
-    }
-    
-    public String toString() {
-    	return pseudo+"_"+score+"_"+paddle.getX()+"_"+color;
     }
     
 }

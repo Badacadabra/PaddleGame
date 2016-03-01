@@ -32,10 +32,10 @@ public class Gamer {
 	/**
 	 * Constructeur de la classe
 	 * @param pseudo pseudo du joueur
-	 * @param score socre du joueur
+	 * @param score score du joueur
 	 * @param paddle raquette du joueur
 	 */
-	public Gamer(String pseudo, int score,Paddle paddle ) {
+	public Gamer(String pseudo, int score, Paddle paddle ) {
 		this.pseudo = pseudo;
 		this.score = score;
 		this.paddle = paddle;
@@ -101,7 +101,7 @@ public class Gamer {
 
 	/**
 	 * Modifie le nombre de points du joueur 
-	 * @param earnedPoints the earnedPoints to set
+	 * @param earnedPoints nouveaux points à assigner
 	 */
 	public void setEarnedPoints(int earnedPoints) {
 		this.earnedPoints += earnedPoints;
@@ -117,7 +117,7 @@ public class Gamer {
 
 	/**
 	 * Modifie le nombre de points idéal pour le joueur
-	 * @param idealPoints the idealPoints to set
+	 * @param idealPoints nouveaux points à assigner
 	 */
 	public void setIdealPoints(int idealPoints) {
 		this.idealPoints += idealPoints;

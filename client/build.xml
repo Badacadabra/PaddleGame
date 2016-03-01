@@ -3,6 +3,7 @@
 
 <target name="compile" depends="init">				
   <javac srcdir="src" destdir="build" includeantruntime="false">
+    <include name="main/**/*.java" />
     <include name="game/**/*.java" />
     <include name="network/**/*.java" />
   </javac>
@@ -11,13 +12,13 @@
 <target name="dist" depends="init,compile">
   <jar basedir="build" excludes="tests/**" destfile="dist/paddle-game-client.jar">
     <manifest>
-      <attribute name="Main-Class" value="Client" />
+      <attribute name="Main-Class" value="main/Client" />
     </manifest>
   </jar>
 </target>
 
 <target name="doc" depends="init,compile">
-  <javadoc packagenames="game.*,network.*" sourcepath="src" destdir="doc" charset="UTF-8" />
+  <javadoc packagenames="main.*,game.*,network.*" sourcepath="src" destdir="doc" charset="UTF-8" />
 </target>
 
 <target name="init">

@@ -6,13 +6,16 @@ import game.Gamer;
 import game.GamerManagement;
 
 import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import main.Server;
 
+/**
+ * Classe représentant le flux d'écriture du serveur
+ * @author Macky Dieng
+ */
 public class Output extends Thread {
 	
 	/**
@@ -86,7 +89,7 @@ public class Output extends Thread {
 				if (!listGamers.contains(gm.getGamer())) {
 					 listGamers.add(gm.getGamer());
 				 }
-				String msg = Primitives.SEND_BALL_COORDS;
+				String msg = Primitives.SEND_BALL_COORDS.toString();
 		 		this.write(msg,gm.getOut()); //On informe que les infos qui vont suivres concernent la balle
 		 		this.moveBall();
 		 		msg = Integer.toString(ball.getX()); //Le x de la balle
@@ -101,8 +104,8 @@ public class Output extends Thread {
 		}
 	}
 	/**
-	 * Méthode permettant de générer des coordonnées aléatoires pour le ballon
-	 * @return int[]
+	 * Méthode permettant de générer des coordonnées aléatoires pour la balle
+	 * @return coodonnées aléatoires
 	 */
 	private int[] getRandomCoords() {
  		Random r = new Random();
@@ -115,31 +118,40 @@ public class Output extends Thread {
 		
  	}
 	/**
-	 * Méthode générant la création d'une nouvelle balle
+	 * Méthode qui crée une nouvelle balle
 	 */
  	private void createNewBall() {
 		int[] coords = this.getRandomCoords();
 		ball = Ball.getBall(coords[0], coords[1]);
  	}
  	/**
- 	 * Méthode gérant le déplacement de la bale
+ 	 * Méthode gérant le déplacement de la balle
  	 */
  	private void moveBall() {
  		
- 		if(ballX < 1)reverseX = false;
-	      if(ballX > GameDimensions.GAME_ZONE_WIDTH - GameDimensions.BALL_DIAMETER)reverseX = true;          
-	      if(ballY < 1)reverseY = false;
-	      if(ballY > GameDimensions.GAME_ZONE_WIDTH - GameDimensions.BALL_DIAMETER)reverseY = true;
-	      if(!reverseX)ball.setX(++ballX);
-	      else ball.setX(--ballX);
-	      if(!reverseY) ball.setY(++ballY);
-	      else ball.setY(--ballY);
+ 		if (ballX < 1) reverseX = false;
+	    if (ballX > GameDimensions.GAME_ZONE_WIDTH - GameDimensions.BALL_DIAMETER) reverseX = true;          
+	    if (ballY < 1) reverseY = false;
+	    if (ballY > GameDimensions.GAME_ZONE_WIDTH - GameDimensions.BALL_DIAMETER) reverseY = true;
+	    
+	    // Déplacement en x
+	    if (!reverseX) {
+	    	ball.setX(++ballX);
+	    } else {
+	    	ball.setX(--ballX);
+	    }
+	    
+	    // Déplacement en y
+	    if (!reverseY) {
+	    	ball.setY(++ballY);
+	    } else {
+	    	ball.setY(--ballY);
+	    }
 	      
-	      //Gestion des collisions
+	      // Gestion des collisions
 	      int min = Math.abs(ballX - (listGamers.get(0).getPaddle().getX() + (GameDimensions.PADDLE_WIDTH / 2)));
     	  Gamer winner = null;
     	  boolean collisionDetected = false;
-	      // Gestion des collisions
 	      for (Gamer gamer : listGamers) {
 	    	  if (ballY + GameDimensions.BALL_DIAMETER == GameDimensions.PADDLE_Y
 	                  && ballX >= gamer.getPaddle().getX()
@@ -157,7 +169,7 @@ public class Output extends Thread {
 	      if (collisionDetected) {
 	    	  this.calculateScore(true,winner);
 	      }
-          //Perte de la balle 
+          // Perte de la balle
           if (ballY > GameDimensions.PADDLE_Y + GameDimensions.BALL_DIAMETER + 1) {
         	  int[] coords = this.getRandomCoords();
               ball.setX(coords[0]);

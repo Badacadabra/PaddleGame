@@ -2,7 +2,6 @@ package game;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,11 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
- * Classe définissant la zone du jeu proprement dit.
+ * Classe définissant la zone du jeu.
  * Il s'agit ici d'un objet de type JPanel contenant la balle et les raquettes.
  * On remarquera notamment que cette classe implémente MouseMotionListener pour écouter les mouvements de souris.
  * 
@@ -26,11 +24,11 @@ import javax.swing.JPanel;
  */
 public class GameZone extends JPanel implements MouseMotionListener {
 
-    /** Constante déterminant la largeur de la zone contenant la balle */
-    public static final int BALL_AREA_WIDTH = 600;
+    /** Constante déterminant la largeur de la zone de jeu */
+    public static final short WIDTH = 600;
     
-    /** Constante déterminant la hauteur de la zone contenant la balle */
-    public static final int BALL_AREA_HEIGHT = 600;
+    /** Constante déterminant la hauteur de la zone de jeu */
+    public static final short HEIGHT = 600;
     
     /** La balle du jeu */
     private Ball ball;
@@ -59,7 +57,7 @@ public class GameZone extends JPanel implements MouseMotionListener {
         this.opponents = new HashMap<String,Gamer>();
         
         // Taille de la zone de jeu
-        setPreferredSize(new Dimension(BALL_AREA_WIDTH, BALL_AREA_HEIGHT));
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
         
         // On écoute les événements de MouseMotionListener (drag & move)
         this.addMouseMotionListener(this);
@@ -87,68 +85,66 @@ public class GameZone extends JPanel implements MouseMotionListener {
     }
     
     /**
-     * Méthode helper utilisée par « paintComponent » pour dessiner la zone de jeu
+     * Méthode helper utilisée par « paintComponent » pour dessiner la zone de jeu.
      * 
      * @param g2d Objet Graphics2D
      */
     private void drawGameZone(Graphics2D g2d) {
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, BALL_AREA_WIDTH, BALL_AREA_HEIGHT);
+        g2d.fillRect(0, 0, WIDTH, HEIGHT);
     }
     
     /**
-     * Méthode helper utilisée par « paintComponent » pour dessiner la balle
+     * Méthode helper utilisée par « paintComponent » pour dessiner la balle.
      * 
      * @param g2d Objet Graphics2D
      */
     private void drawBall(Graphics2D g2d) {
         g2d.setColor(Color.WHITE);
-        g2d.fillOval(ball.getX(), ball.getY(), Ball.BALL_DIAMETER, Ball.BALL_DIAMETER);
+        g2d.fillOval(ball.getX(), ball.getY(), Ball.DIAMETER, Ball.DIAMETER);
     }
     
     /**
-     * Méthode helper utilisée  par « paintComponent » pour dessiner toutes les raquettes
+     * Méthode helper utilisée  par « paintComponent » pour dessiner toutes les raquettes.
      * 
      * @param g2d Objet Graphics2D
      */
     private void drawPaddles(Graphics2D g2d) {
-        // On dessine la raquette du joueur courant
-        Paddle paddle = gamer.getPaddle();
-        g2d.setColor(gamer.getColor());
-        g2d.fillRoundRect(paddle.getX(), Paddle.Y, Paddle.WIDTH, Paddle.HEIGHT, 15, 15);
         // S'ils existent, on dessine les raquettes des adversaires (avec transparence)
         if (opponents.size() > 0) {
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .4f));
             for (Gamer opponent : opponents.values()) {
-                // Gestion de la transparence
-                Composite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, .4f);
-                g2d.setComposite(composite);
-                // Raquettes des adversaires
-                Paddle opponentPaddle = opponent.getPaddle();
-                g2d.setColor(opponent.getColor());
-                g2d.fillRoundRect(opponentPaddle.getX(), Paddle.Y, Paddle.WIDTH, Paddle.HEIGHT, 15, 15);
+                drawPaddle(g2d, opponent);
             }
         }
+        // On dessine la raquette du joueur courant (opaque)
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+    	drawPaddle(g2d, gamer);
     }
     
     /**
-     * Méthode lançant le déplacement de la balle.
-     * Les coordonnées de la balle viennent du serveur.
+     * Méthode utilisée par « drawPaddles » pour éviter la redondance de code.
+     * Cette méthode dessine la raquette d'un joueur.
+     * 
+     * @param g2d Objet Graphics2D
+     * @param gamer Joueur pour lequel on doit dessiner une raquette
      */
-    public void moveBall() {
-        this.repaint();
+    private void drawPaddle(Graphics g2d, Gamer gamer) {
+    	Paddle paddle = gamer.getPaddle();
+        g2d.setColor(gamer.getColor());
+        g2d.fillRoundRect(paddle.getX(), Paddle.Y, Paddle.WIDTH, Paddle.HEIGHT, 15, 15);
     }
     
     /**
      * Méthode gérant toutes les actions relatives à MouseMotionListener.
      * À chaque action avec la souris (drag & move), on capte les nouvelles coordonnées.
-     * On récupère en particulier le X pour mettre à jour la position de la raquette.
+     * On récupère en particulier le x pour mettre à jour la position de la raquette.
      * 
      * @param e Objet MouseEvent
      */
     private void paddleAction(MouseEvent e) {
-        // System.out.println(e.getPoint());
         Paddle paddle = gamer.getPaddle();
-        if (e.getX() < (GameZone.BALL_AREA_WIDTH - Paddle.WIDTH)) {
+        if (e.getX() < (GameZone.WIDTH - Paddle.WIDTH)) {
             paddle.setX(e.getX());
         }
         repaint();
@@ -165,7 +161,7 @@ public class GameZone extends JPanel implements MouseMotionListener {
     }
 
     /**
-     * Méthode gérant les événements liés au déplacement de la souris.
+     * Méthode gérant les événements liés au déplacement simple de la souris.
      * 
      * @param e Objet MouseEvent
      */
@@ -178,25 +174,10 @@ public class GameZone extends JPanel implements MouseMotionListener {
      * Méthode permettant d'ajouter un adversaire à la liste des adversaires.
      * Utile lorsqu'un nouveau client se connecte et veut entamer une partie.
      * 
-     * @param La nouvelle raquette à afficher dans la zone de jeu
+     * @param Le nouvel adversaire à afficher dans la zone de jeu
      */
     public void addOpponent(Gamer gamer) {
         opponents.put(gamer.getPseudo(), gamer);
-    }
-    
-    /**
-     * Méthode mettant à jour les données du joueur.
-     * Cette méthode est utile si on part du principe que les modifications sont fréquentes.
-     * Il est bien plus performant de mettre à jour les données dans une HashMap que de vider et de reconstruire une ArrayList...
-     * 
-     * @param gamer Objet Gamer chargé avec toutes les nouvelles données
-     */
-    public void updateOpponent(Gamer gamer) {
-        String pseudo = gamer.getPseudo();
-        if (opponents.containsKey(pseudo)) {
-            opponents.get(pseudo).setScore(gamer.getScore());
-            opponents.get(pseudo).setPaddle(gamer.getPaddle());
-        }
     }
     
     /**
@@ -216,15 +197,6 @@ public class GameZone extends JPanel implements MouseMotionListener {
      */
     public Ball getBall() {
         return ball;
-    }
-
-    /**
-     * Mutateur pour la balle
-     * 
-     * @param ball Nouvelle instance de Ball
-     */
-    public void setBall(Ball ball) {
-        this.ball = ball;
     }
 
     /**
@@ -253,4 +225,5 @@ public class GameZone extends JPanel implements MouseMotionListener {
     public DefaultListModel<Gamer> getScoresModel() {
         return scoresModel;
     }
+    
 }

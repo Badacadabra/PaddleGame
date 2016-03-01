@@ -6,7 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 /**
- * Classe Reception répresente le flux de lecture du serveur
+ * Classe répresentant le flux de lecture du serveur
  * @author Macky Dieng
  */
 public class Input extends Thread {
@@ -17,7 +17,7 @@ public class Input extends Thread {
 	private BufferedReader in;
 	
 	/**
-	 * Message à renvoyé aux joueurs
+	 * Message à renvoyer aux joueurs
 	 */
 	private String primitive;
 	
@@ -33,7 +33,7 @@ public class Input extends Thread {
 	
 	/**
 	 * Constructeur de la classe
-	 * @param in le flux de lecture
+	 * @param in gestionnaire de client
 	 */
 	public Input(GamerManagement gm) {
 		this.gamerManagement = gm;
@@ -42,30 +42,30 @@ public class Input extends Thread {
 	}
 	@Override
 	/**
-	 * Méthode génrant la reception des données dans l'entrée standard des clients
+	 * Méthode gérant la réception des données dans l'entrée standard des clients
 	 */
 	public void run() {
 		read();
 	}
 	/**
-	 * Méthde effectuant une lecture permanente des données 
+	 * Méthode effectuant une lecture permanente des données 
 	 * depuis l'entrée standard des clients
 	 */
 	private void read() {
 		try {
 			boolean canRead = true;
 			ArrayList<String> listPrimitve = new ArrayList<>();
-			listPrimitve.add(Primitives.SEND_PSEUDO);
-			listPrimitve.add(Primitives.SEND_PADDLE_POSITION);
+			listPrimitve.add(Primitives.SEND_PSEUDO.toString());
+			listPrimitve.add(Primitives.SEND_PADDLE_POSITION.toString());
 			primitive = in.readLine();
-			if (primitive.equals(Primitives.SEND_PSEUDO)) { 
+			if (primitive.equals(Primitives.SEND_PSEUDO.toString())) {
 				pseudo  = in.readLine();
 				gamerManagement.getGamer().setPseudo(pseudo); //associe le pseudo au joueur courant
 			}
 			while(canRead) {
 				primitive = in.readLine();
 				if (primitive!=null) {
-					if (primitive.equals(Primitives.SEND_PADDLE_POSITION)) {
+					if (primitive.equals(Primitives.SEND_PADDLE_POSITION.toString())) {
 						int paddleX = Integer.parseInt(in.readLine());
 						gamerManagement.getGamer().getPaddle().setX(paddleX); //Modifie en temps réel la raquette du joueur courant
 					}

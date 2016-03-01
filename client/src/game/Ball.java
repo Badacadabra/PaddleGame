@@ -10,7 +10,7 @@ package game;
 public class Ball {
 
     /** Constante déterminant le diamètre de la balle */
-    public static final int BALL_DIAMETER = 20;
+    public static final byte DIAMETER = 20;
     
     /** Instance statique de la classe elle-même (cf. Singleton) */
     private static Ball ball;

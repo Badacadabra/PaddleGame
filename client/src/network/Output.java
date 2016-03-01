@@ -19,11 +19,11 @@ public class Output extends IO {
     /**
      * Constructeur de la classe.
      * Celui-ci prend en paramètres un objet OutputStream représentant un flux de sortie, ainsi qu'un objet GameZone gérant toute la partie.
-     * Cela est suffisant : le joueur n'envoie au serveur que des informations le concernant (notamment son pseudo, ses points, et la position de sa raquette).
+     * Cela est suffisant : le joueur n'envoie au serveur que des informations le concernant (notamment son pseudo et la position de sa raquette).
      * À noter que le flux de sortie est décoré d'un PrintWriter lors de l'initialisation...
      * 
-     * @param out Objet matérialisant la sortie du client
-     * @param gamer Objet matérialisant le joueur courant
+     * @param out Flux de sortie
+     * @param gameZone Zone de jeu
      */
     public Output(OutputStream out, GameZone gameZone) {
         super(gameZone);
@@ -37,26 +37,26 @@ public class Output extends IO {
      */
     private void write(Primitives primitive) {
         // Le client envoie son pseudo au serveur
-        if (primitive.getName().equals("SEND_PSEUDO")) {
+        if (primitive == Primitives.SEND_PSEUDO) {
             String pseudo = gameZone.getGamer().getPseudo();
-            out.println(Primitives.SEND_PSEUDO.getName());
+            out.println(Primitives.SEND_PSEUDO.toString());
             out.println(pseudo);
+        }
         // Le client envoie la position de sa raquette au serveur
-        } else if (primitive.getName().equals("SEND_PADDLE_POSITION")) {
+        if (primitive == Primitives.SEND_PADDLE_POSITION) {
             String paddlePosition = Integer.toString(gameZone.getGamer().getPaddle().getX());
-            out.println(Primitives.SEND_PADDLE_POSITION.getName());
+            out.println(Primitives.SEND_PADDLE_POSITION.toString());
             out.println(paddlePosition);
-        } else {
-            //System.out.println("Primitive inconnue");
         }
         out.flush();
     }
     
     /**
-     * Méthode gérant l'écriture dans la sortie standard
+     * Méthode du thread gérant l'écriture dans la sortie standard
      */
+    @Override
     public void run() {
-        // Si cette méthode est exécutée, c'est que le Thread est lancé, et donc que l'utilisateur a renseigné son pseudo
+        // Si cette méthode est exécutée, c'est que le thread est lancé, et donc que l'utilisateur a renseigné son pseudo
         write(Primitives.SEND_PSEUDO);
         while(true) {
             try {

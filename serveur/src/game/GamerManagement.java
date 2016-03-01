@@ -12,18 +12,18 @@ import network.Output;
 import network.Input;
 
 /**
- * Class GameManagement : classe permettant de gérer les connextions clients côté serveur
+ * Classe GamerManagement : classe permettant de gérer les connexions clients côté serveur
  * @author Macky Dieng
  */
 public class GamerManagement extends Thread {
 	
 	/***
-	 * Socket cliente
+	 * Socket client
 	 */
 	private Socket client;
 	
 	/**
-	 * Flux d'écture du client
+	 * Flux d'écriture du client
 	 */
 	private PrintWriter out;
 	
@@ -39,7 +39,7 @@ public class GamerManagement extends Thread {
 	
 	/**
 	 * Constructeur de la classe
-	 * @param client : le client courant en cours de connexion
+	 * @param client le client courant en cours de connexion
 	 */
 	public GamerManagement(Socket client) {
 		this.client = client;
@@ -73,14 +73,14 @@ public class GamerManagement extends Thread {
 	}
 	/**
 	 * Modifie le joueur courant associé au gestionnaire
-	 * @param gamer la nouveau joueur à assigner
+	 * @param gamer le nouveau joueur à assigner
 	 */
 	public void setGamer(Gamer gamer) {
 		this.gamer = gamer;
 	}
 	/**
 	 * Renvoie la sortie standard
-	 * @return PrintWriter
+	 * @return la sortie standard
 	 */
 	public PrintWriter getOut() {
 		return out;
@@ -94,7 +94,7 @@ public class GamerManagement extends Thread {
 	}
 	/**
 	 * Renvoie l'entrée standard du client courant
-	 * @return the in
+	 * @return l'entrée standard
 	 */
 	public BufferedReader getIn() {
 		return in;

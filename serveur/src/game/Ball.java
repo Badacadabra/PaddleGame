@@ -3,12 +3,12 @@ package game;
  * Classe Ball représentant la balle du jeu 
  * @author Macky Dieng
  */
-public class Ball extends Thread {
+public class Ball {
 	
 	/**
 	 * Constante gérant la cadence de la balle
 	 */
-	public static int SPEED = 20;
+	public static final int SPEED = 20;
 	
 	/**
 	 * Coordonnée x de la balle
@@ -27,8 +27,8 @@ public class Ball extends Thread {
 	
 	/**
 	 * Constructeur de la classe
-	 * @param x
-	 * @param y
+	 * @param x coordonnée x de la balle
+	 * @param y coordonnée y de la balle
 	 */
 	private Ball(int x, int y) {
 		this.x = x;
@@ -36,20 +36,8 @@ public class Ball extends Thread {
 	}
 	
 	/**
-	 * Permet de lancer le thread
-	 */
-	public void run() {
-		
-	}
-	/**
-	 * Permet de gérer le mouvement de la balle
-	 */
-	public void move () {
-		//
-	}
-	/**
 	 * Renvoie la coordonnée x de la balle
-	 * @return int
+	 * @return coordonnée x de la balle
 	 */
 	public int getX() {
 		return x;
@@ -65,7 +53,7 @@ public class Ball extends Thread {
 
 	/**
 	 * Renvoie la coordonnée y de la balle
-	 * @return int
+	 * @return coordonnée y de la balle
 	 */
 	public int getY() {
 		return y;
@@ -80,7 +68,7 @@ public class Ball extends Thread {
 	}
 
 	/**
-	 * Revoie une instance de balle
+	 * Revoie une unique instance de balle
 	 * @return Ball
 	 */
 	public static Ball getBall(int x, int y) {
@@ -92,7 +80,8 @@ public class Ball extends Thread {
 	}
 
 	/**
-	 * @param ball the ball to set
+	 * Modifie la balle
+	 * @param ball nouvelle balle à assigner
 	 */
 	public static void setBall(Ball ball) {
 		Ball.ball = ball;

@@ -7,6 +7,10 @@ import java.util.List;
 
 import game.*;
 
+/**
+ * Classe principale du serveur
+ * @author Macky Dieng
+ */
 public class Server {
 	
 	/**
@@ -15,19 +19,19 @@ public class Server {
 	public static final int PORT = 1337;
 	
 	/**
-	 * La socket serveur 
+	 * Le socket serveur 
 	 */
 	public static ServerSocket ss = null;
 	
 	/**
-	 * List des gestionnaire de joueur
+	 * Liste des gestionnaires de joueurs
 	 */
 	public static List<GamerManagement> listGamerManagement = new ArrayList<>();
 	
 	/**
-	 * Méthode principale de la classe permettant de recevoir en continue
+	 * Méthode principale de la classe permettant de recevoir en continu
 	 * les connexions clients
-	 * @param args les arguements de la méthode
+	 * @param args les arguments de la méthode
 	 */
 	public static void main(String[] args) {
 		try {

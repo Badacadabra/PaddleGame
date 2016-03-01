@@ -6,19 +6,24 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * Classe définissant une JList personnalisée pour l'affichage des scores.
+ * 
+ * @author Baptiste Vannesson
+ */
 public class ScoresList<Gamer> extends JList {
 
     /** Constante déterminant la marge interne supérieure */
-    public static final int PADDING_TOP = 10;
+    public static final byte PADDING_TOP = 10;
     
     /** Constante déterminant la marge interne gauche */
-    public static final int PADDING_LEFT = 10;
+    public static final byte PADDING_LEFT = 10;
     
     /** Constante déterminant la marge interne inférieure */
-    public static final int PADDING_BOTTOM = 10;
+    public static final byte PADDING_BOTTOM = 10;
     
     /** Constante déterminant la marge interne droite */
-    public static final int PADDING_RIGHT = 10;
+    public static final byte PADDING_RIGHT = 10;
     
     /**
      * Constructeur de la zone d'affichage des scores.

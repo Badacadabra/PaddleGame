@@ -1,7 +1,7 @@
 package game;
 /**
  * Classe Paddle : Représente la raquette des joueurs côté serveur
- * @author Macky dieng
+ * @author Macky Dieng
  */
 public class Paddle {
 	/**
@@ -11,15 +11,15 @@ public class Paddle {
 	
 	/**
 	 * Constructeur de la classe
-	 * @param x : la coordonnée x de la raquette
+	 * @param x la coordonnée x de la raquette
 	 */
 	public Paddle(int x) {
 		this.x = x;
 	}
 
 	/**
-	 * Renvoie la coordoonée x de la raquette
-	 * @return the x
+	 * Renvoie la coordonnée x de la raquette
+	 * @return coordonnée x de la raquette
 	 */
 	public int getX() {
 		return x;
@@ -27,7 +27,7 @@ public class Paddle {
 
 	/**
 	 * Modifie la coordonnée x de la raquette
-	 * @param x nouvelle coordoée à assigner
+	 * @param x nouvelle coordonnée à assigner
 	 */
 	public void setX(int x) {
 		this.x = x;

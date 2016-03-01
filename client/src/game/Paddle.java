@@ -10,13 +10,13 @@ package game;
 public class Paddle {
 
     /** Constante déterminant la largeur de la raquette */
-    public static final int WIDTH = 100;
+    public static final byte WIDTH = 100;
     
     /** Constante déterminant la hauteur de la raquette */
-    public static final int HEIGHT = 15;
+    public static final byte HEIGHT = 15;
  
     /** Constante déterminant la position de la raquette sur l'axe des y */
-    public static final int Y = 550;
+    public static final short Y = 550;
     
     /** Position de la raquette sur l'axe des x */
     private int x;

@@ -1,0 +1,13 @@
+\select@language {french}
+\contentsline {section}{\numberline {1}Quelques pr\IeC {\'e}cisions}{3}{section.1}
+\contentsline {section}{\numberline {2}Analyse du probl\IeC {\`e}me}{4}{section.2}
+\contentsline {subsection}{\numberline {2.1}Physique de la balle}{4}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Calcul des scores}{5}{subsection.2.2}
+\contentsline {section}{\numberline {3}D\IeC {\'e}tails sur la conception}{7}{section.3}
+\contentsline {subsection}{\numberline {3.1}Client}{7}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Serveur}{10}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Protocole}{12}{subsection.3.3}
+\contentsline {section}{\numberline {4}D\IeC {\'e}tails sur le d\IeC {\'e}veloppement}{14}{section.4}
+\contentsline {subsection}{\numberline {4.1}Client}{14}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Serveur}{15}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Protocole}{17}{subsection.4.3}

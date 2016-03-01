@@ -1,6 +1,5 @@
 package game;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -27,16 +26,13 @@ import network.Output;
 public class ClientGUI extends JFrame implements Runnable {
 
     /** Constante déterminant la largeur de la fenêtre */
-    public static final int GUI_WIDTH = 800;
+    public static final short GUI_WIDTH = 800;
     
     /** Constante déterminant la hauteur de la fenêtre */
-    public static final int GUI_HEIGHT = 600;
+    public static final short GUI_HEIGHT = 600;
     
     /** Constante déterminant le port de connexion au serveur */
-    public static final int GAME_PORT = 1337;
-    
-    /** Canevas principal */
-    private Container screen;
+    public static final short GAME_PORT = 1337;
     
     /** Zone affichant les scores (de type JList) */
     private ScoresZone scoresZone;
@@ -56,7 +52,7 @@ public class ClientGUI extends JFrame implements Runnable {
     public ClientGUI() {
         
         // On initialise avant tout un nouveau joueur avec tous les paramètres par défaut
-        int center = (GameZone.BALL_AREA_WIDTH / 2) - (Paddle.WIDTH / 2);
+        int center = (GameZone.WIDTH / 2) - (Paddle.WIDTH / 2);
         Paddle paddle = new Paddle();
         paddle.setX(center);
         Gamer gamer = new Gamer();
@@ -69,7 +65,7 @@ public class ClientGUI extends JFrame implements Runnable {
             System.exit(0);
         } else { // Sinon...
             if (response.length() >= 3) { // Si le pseudo contient au moins 3 caractères, on accepte le joueur
-                System.out.println("Utilisateur OK : " + response);
+                System.out.println("Joueur OK : " + response);
                 gamer.setPseudo(response);
             } else { // On dit à l'utilisateur que son pseudo n'est pas bon et on met fin au jeu
                 JOptionPane.showMessageDialog(this, "Votre pseudo doit contenir au moins 3 caractères", "Mauvais pseudo !", JOptionPane.ERROR_MESSAGE);
@@ -78,22 +74,18 @@ public class ClientGUI extends JFrame implements Runnable {
         }
         
         // Création de l'interface graphique en Swing
-        screen = this.getContentPane();
+        Container screen = this.getContentPane();
         
         DefaultListModel<Gamer> scoresModel = new DefaultListModel<>();
         scoresModel.addElement(gamer);
-        ScoresList<Gamer> scoresList = new ScoresList<Gamer>(scoresModel);
+        ScoresList<Gamer> scoresList = new ScoresList<>(scoresModel);
         scoresZone = new ScoresZone(scoresList);
         
         gameZone = new GameZone(ball, gamer, scoresModel);
-        //new Thread(gameZone).start();
         
         screen.setLayout(new BoxLayout(screen, BoxLayout.X_AXIS)); // Pattern Strategy
         screen.add(scoresZone);
         screen.add(gameZone);
-        
-        // Lancement du Thread de connexion au serveur
-        new Thread(this).start();
         
         // Configuration de la fenêtre
         setTitle("Paddle Game (par Macky Dieng & Baptiste Vannesson)");
@@ -104,13 +96,16 @@ public class ClientGUI extends JFrame implements Runnable {
         pack();
         setVisible(true);
         
+        // Lancement du Thread de connexion au serveur
+        new Thread(this).start();
+        
     }
     
     /**
      * Méthode exécutée si l'utilisateur dépasse le stade de la pop-up.
      * Ici le client se connecte au serveur via sa socket.
      * Pour des raisons de clarté du code, les traitements sont délégués à des classes gérant les entrées/sorties.
-     * Ces classes sont elles-mêmes des Threads pouvant être lancés.
+     * Ces classes sont elles-mêmes des threads pouvant être lancés.
      */
     @Override
     public void run() {
@@ -118,8 +113,8 @@ public class ClientGUI extends JFrame implements Runnable {
             socket = new Socket(InetAddress.getLocalHost(), GAME_PORT);
             input = new Input(socket.getInputStream(), gameZone);
             output = new Output(socket.getOutputStream(), gameZone);
-            input.start();
-            output.start();
+            new Thread(input).start();
+            new Thread(output).start();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
